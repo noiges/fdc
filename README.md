@@ -8,6 +8,6 @@ To convert an .igc file to a .kml with the same name at the same location:
 	./igc-kml.rb input.igc
 	
 To save the converted .kml to another location:
-```
-./igc-kml.rb input.igc output.kml
-```
+
+	./igc-kml.rb input.igc output.kml
+
