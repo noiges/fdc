@@ -4,7 +4,8 @@ require 'builder'
 require 'date'
 require 'optparse'
 
-ERROR_DIRECTORY = -6
+ERROR_NO_SUCH_FILE_DIR = -1
+ERROR_DIRECTORY = -2
 
 module Location
   
@@ -43,10 +44,15 @@ class Converter
   
   def load_igc(path)
     
+    # Load file
+    file = File.new(path, "r")
+    @igc = file.read
+    file.close
+    
     # Match filename and path
     matches = path.match(/^((\.?\/)?(.+\/)*)((\w{8})(\.igc)*)$/)
     
-    # ^((\.?\/)?(.+\/)*)((\w{8})(\.igc)*)$ matches all of the following:
+    # Matches all of the following:
     #     /Users/nokinen/Code/github/igc-kml/sample/25GXXXX1.igc
     #     /Users/nokinen/Code/github/igc-kml/sample/25GXXXX1
     #     /Users/nokinen/Code/github/igkientb/sample/25GXXXX1
@@ -56,19 +62,12 @@ class Converter
     #     sample/25GXXXX1.igc
     #     25GXXXX1.igc
     #     25GXXXX1
-
-    raise IOError, "Input is directory instead of file" unless matches
-    
-    @path = matches[1]
-    @filename = matches[5]
-    
+    #
     # Match 1: path without filename and extension
     # Match 5: filename without extension
     
-    # Load file
-    file = File.new(path, "r")
-    @igc = file.read
-    file.close
+    @path = matches[1]
+    @filename = matches[5]
     
     parse_igc
     build_kml
@@ -168,9 +167,12 @@ if __FILE__ == $0
   ARGV.each do |file|
     begin
       converter = Converter.new(file)
-    rescue  IOError => e
+    rescue Errno::EISDIR => e
       puts e.message
       exit(ERROR_DIRECTORY)
+    rescue Errno::ENOENT => e
+      puts e.message
+      exit(ERROR_NO_SUCH_FILE_DIR)
     end
     
     if options[:stdout] 
