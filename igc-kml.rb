@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'builder'
 require 'date'
+require 'optparse'
 
 module Location
   
@@ -70,13 +71,13 @@ class Converter
     
   end
   
-  def save_kml(path = (@path << @filename))
+  def save_kml(path = @path)
     
     if @kml
-       if path.include?(".kml")
-         file = File.new(path, "w")
+       if path.match(/.$/) == "/"
+         file = File.new(path << @filename << ".kml", "w")
        else
-         file = File.new(path << ".kml", "w")
+         file = File.new(path << "/" << @filename << ".kml", "w")
        end
        file.write(@kml)
        file.close
@@ -128,22 +129,36 @@ class Converter
 end
 
 if __FILE__ == $0
-  usage = <<-EOF
-  Please provide at least an input file in .igc format
+  
+  options = {}
+  
+  optparse = OptionParser.new do |opts|
+    opts.banner = "Usage: igc-kml.rb [OPTIONS] FILEPATTERN..."
+    
+    opts.separator ""
+    opts.separator "Options:"
+    
+    # Define alternative destination directory
+    options[:dest] = nil
+    opts.on( '-d', '--destination DEST', String, 'Alternative destination directory for converted .kml files' ) do |dest| 
+     options[:dest] = dest
+    end
+    
+    # Define help
+    opts.on_tail( '-h', '--help', 'Display this help screen' ) do
+      puts opts
+      exit
+    end
 
-  Usage:
-    igc-kml igc_input_file
-    igc-kml igc_input_file kml_output_file
-  EOF
-
-  case ARGV.length
-  when 1
-    converter = Converter.new ARGV[0]
-    converter.save_kml
-  when 2
-    converter = Converter.new ARGV[0]
-    converter.save_kml ARGV[1]
-  else
-    STDOUT.puts usage
   end
+  
+  optparse.parse!
+  
+  puts optparse if ARGV.empty?
+  
+  ARGV.each do |file|
+    converter = Converter.new(file)
+    options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+  end
+  
 end
