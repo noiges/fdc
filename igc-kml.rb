@@ -4,6 +4,8 @@ require 'builder'
 require 'date'
 require 'optparse'
 
+ERROR_DIRECTORY = -6
+
 module Location
   
   # Convert from MinDec to Dec notation
@@ -54,6 +56,8 @@ class Converter
     #     sample/25GXXXX1.igc
     #     25GXXXX1.igc
     #     25GXXXX1
+
+    raise IOError, "Input is directory instead of file" unless matches
     
     @path = matches[1]
     @filename = matches[5]
@@ -103,9 +107,7 @@ class Converter
     xml.instruct!
     xml.kml "xmlns" => "http://www.opengis.net/kml/2.2", "xmlns:gx" => "http://www.google.com/kml/ext/2.2" do
       xml.Document { 
-        # xml.name "Test"
         xml.Placemark {
-          # xml.name "Test"
           xml.name @filename
           xml.gx:Track do
             xml.altitudeMode "absolute"
@@ -164,7 +166,13 @@ if __FILE__ == $0
   puts optparse if ARGV.empty?
   
   ARGV.each do |file|
-    converter = Converter.new(file)
+    begin
+      converter = Converter.new(file)
+    rescue  IOError => e
+      puts e.message
+      exit(ERROR_DIRECTORY)
+    end
+    
     if options[:stdout] 
       STDOUT.puts converter.kml
     elsif
