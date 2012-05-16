@@ -133,20 +133,20 @@ if __FILE__ == $0
   options = {}
   
   optparse = OptionParser.new do |opts|
-    opts.banner = "Usage: igc-kml.rb [OPTIONS] FILEPATTERN..."
+    opts.banner = "Usage: igc-kml.rb [OPTIONS] FILEPATTERN…"
     
     opts.separator ""
     opts.separator "Options:"
     
     # Define alternative destination directory
     options[:dest] = nil
-    opts.on( '-d', '--destination DEST', String, 'Alternative destination directory for converted .kml files' ) do |dest| 
+    opts.on( '-d', '--destination DEST', String, 'Alternative destination directory for converted KML files' ) do |dest| 
      options[:dest] = dest
     end
     
     # Define alternative destination directory
     options[:stdout] = false
-    opts.on( '-s', '--stdout', String, 'Print .kml to stdout' ) do
+    opts.on( '-s', '--stdout', String, 'Print converted KML to STDOUT' ) do
      options[:stdout] = true
     end
     
