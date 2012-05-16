@@ -7,4 +7,8 @@ class TestConverter < Test::Unit::TestCase
     assert_raise(ArgumentError) {Converter.new}
   end
   
+  def test_raised_exceptions
+    
+  end
+  
 end
