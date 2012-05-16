@@ -106,6 +106,7 @@ class Converter
         # xml.name "Test"
         xml.Placemark {
           # xml.name "Test"
+          xml.name @filename
           xml.gx:Track do
             xml.altitudeMode "absolute"
             @b_records.each do |b_record|
