@@ -17,4 +17,6 @@ tmp
 _yardoc
 doc/
 
+# User defined
 .DS_Store
+*.kml
