@@ -127,5 +127,21 @@ class Converter
 
 end
 
-converter = Converter.new("sample/25GXXXX1.igc")
-converter.save_kml
+usage = <<-EOF
+Please provide an igc input file
+
+Usage:
+  igc-kml igc_input_file
+  igc-kml igc_input_file kml_output_file
+EOF
+
+case ARGV.length
+when 1
+  converter = Converter.new ARGV[0]
+  converter.save_kml
+when 2
+  converter = Converter.new ARGV[0]
+  converter.save_kml ARGV[1]
+else
+  STDOUT.puts usage
+end
