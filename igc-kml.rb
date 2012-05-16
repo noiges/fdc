@@ -144,6 +144,12 @@ if __FILE__ == $0
      options[:dest] = dest
     end
     
+    # Define alternative destination directory
+    options[:stdout] = false
+    opts.on( '-s', '--stdout', String, 'Print .kml to stdout' ) do
+     options[:stdout] = true
+    end
+    
     # Define help
     opts.on_tail( '-h', '--help', 'Display this help screen' ) do
       puts opts
@@ -158,7 +164,11 @@ if __FILE__ == $0
   
   ARGV.each do |file|
     converter = Converter.new(file)
-    options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+    if options[:stdout] 
+      STDOUT.puts converter.kml
+    elsif
+      options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+    end
   end
   
 end
