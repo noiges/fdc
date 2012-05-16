@@ -127,21 +127,23 @@ class Converter
 
 end
 
-usage = <<-EOF
-Please provide an igc input file
+if __FILE__ == $0
+  usage = <<-EOF
+  Please provide at least an input file in .igc format
 
-Usage:
-  igc-kml igc_input_file
-  igc-kml igc_input_file kml_output_file
-EOF
+  Usage:
+    igc-kml igc_input_file
+    igc-kml igc_input_file kml_output_file
+  EOF
 
-case ARGV.length
-when 1
-  converter = Converter.new ARGV[0]
-  converter.save_kml
-when 2
-  converter = Converter.new ARGV[0]
-  converter.save_kml ARGV[1]
-else
-  STDOUT.puts usage
+  case ARGV.length
+  when 1
+    converter = Converter.new ARGV[0]
+    converter.save_kml
+  when 2
+    converter = Converter.new ARGV[0]
+    converter.save_kml ARGV[1]
+  else
+    STDOUT.puts usage
+  end
 end
