@@ -1,13 +1,19 @@
 # igc-kml
 Ruby tool to convert IGC files to KML
 
+## Requirements
+
+At least ruby 1.8.7, running on a unix or linux system.
+
 ## Usage
-To convert an .igc file to a .kml with the same name at the same location:
+See help:
 
-	chmod +x igc-kml.rb
-	./igc-kml.rb input.igc
+	ruby igc-kml.rb
 	
-To save the converted .kml to another location:
+Convert one or more IGC files to KML:
 
-	./igc-kml.rb input.igc output.kml
+	ruby igc-kml.rb <filepattern>
+	
+Convert IGC files to KML with alternative destination directory:
 
+	ruby igc-kml.rb -d DEST <filepattern>
