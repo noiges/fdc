@@ -11,12 +11,15 @@ module Location
     lat = mindec[0].match(/^(\d{2})((\d{2})(\d{3}))(N|S)/)
     long = mindec[1].match(/^(\d{3})((\d{2})(\d{3}))(E|W)/)
     
+    # Convert minutes to decimal
     lat_dec = lat[1].to_f + (lat[2].to_f / 1000 / 60)
-    lat_dec *= (-1) if long[5] == "S"
     long_dec = long[1].to_f + (long[2].to_f / 1000 / 60)
+    
+    # Change signs according to direction
+    lat_dec *= (-1) if long[5] == "S"
     long_dec *= (-1) if long[5] == "W"
     
-    dec = [long_dec.to_f, lat_dec.to_f]
+    dec = [long_dec, lat_dec]
 
   end
 
@@ -31,23 +34,59 @@ class Converter
   
   attr_accessor :kml
   
-  def initialize(igc_filepath)
-    read_igc(igc_filepath)
-    parse_igc
-    build_kml
+  def initialize(path)
+    load_igc(path)
   end
   
-  def write_kml(kml_filepath)
-    raise NotImplementedError
+  def load_igc(path)
+    
+    # Match filename and path
+    matches = path.match(/^((\.?\/)?(.+\/)*)((\w{8})(\.igc)*)$/)
+    
+    # ^((\.?\/)?(.+\/)*)((\w{8})(\.igc)*)$ matches all of the following:
+    #     /Users/nokinen/Code/github/igc-kml/sample/25GXXXX1.igc
+    #     /Users/nokinen/Code/github/igc-kml/sample/25GXXXX1
+    #     /Users/nokinen/Code/github/igkientb/sample/25GXXXX1
+    #     ./sample/25GXXXX1.igc
+    #     ./25GXXXX1.igc
+    #     ./sample/25GXXXX1
+    #     sample/25GXXXX1.igc
+    #     25GXXXX1.igc
+    #     25GXXXX1
+    
+    @path = matches[1]
+    @filename = matches[5]
+    
+    # Match 1: path without filename and extension
+    # Match 5: filename without extension
+    
+    # Load file
+    file = File.new(path, "r")
+    @igc = file.read
+    file.close
+    
+    parse_igc
+    build_kml
+    
+  end
+  
+  def save_kml(path = (@path << @filename))
+    
+    if @kml
+       if path.include?(".kml")
+         file = File.new(path, "w")
+       else
+         file = File.new(path << ".kml", "w")
+       end
+       file.write(@kml)
+       file.close
+     else
+       raise LoadError "No igc loaded"
+    end
+    
   end
   
   private
-  
-  def read_igc(filepath)
-    file = File.new(filepath, "r")
-    @igc = file.read
-    file.close
-  end
 
   def parse_igc
     # parse utc date with groups HFDTE DD MM YY
@@ -89,7 +128,4 @@ class Converter
 end
 
 converter = Converter.new("sample/25GXXXX1.igc")
-
-file = File.new("test.kml", "w")
-file.write(converter.kml)
-file.close
+converter.save_kml
