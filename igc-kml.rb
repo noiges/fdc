@@ -7,6 +7,8 @@ require 'optparse'
 ERROR_NO_SUCH_FILE_DIR = -1
 ERROR_DIRECTORY = -2
 
+REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})(.*)$/i
+
 module Location
   
   # Convert from MinDec to Dec notation
@@ -96,8 +98,12 @@ class Converter
     # parse utc date with groups HFDTE DD MM YY
     @date = @igc.match(/^(HFDTE)(\d{2})(\d{2})(\d{2})/)
     
+    # parse a records
+    @a_records = @igc.scan(REGEX_A)
+    
     # parse b records with groups B HH MM SS DDMMmmm N/S DDDMMmmm E/W A/V PPPPP GGGGG
     @b_records = @igc.scan(/^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/)
+    
   end
 
   def build_kml
@@ -105,22 +111,20 @@ class Converter
     xml = Builder::XmlMarkup.new(:indent => 2)
     xml.instruct!
     xml.kml "xmlns" => "http://www.opengis.net/kml/2.2", "xmlns:gx" => "http://www.google.com/kml/ext/2.2" do
-      xml.Document { 
-        xml.Placemark {
-          xml.name @filename
-          xml.gx:Track do
-            xml.altitudeMode "absolute"
-            @b_records.each do |b_record|
-               time = DateTime.new(2000 + @date[4].to_i, @date[3].to_i, @date[2].to_i, 
-                 b_record[1].to_i, b_record[2].to_i, b_record[3].to_i)
-               xml.when time
-            end
-            @b_records.each do |b_record|
-               coords = Location.to_dec(b_record[4..5]) << b_record[8].to_f
-               xml.gx :coord, coords.join(" ")
-            end
+      xml.Placemark {
+        xml.name @filename
+        xml.gx:Track do
+          xml.altitudeMode "absolute"
+          @b_records.each do |b_record|
+             time = DateTime.new(2000 + @date[4].to_i, @date[3].to_i, @date[2].to_i, 
+               b_record[1].to_i, b_record[2].to_i, b_record[3].to_i)
+             xml.when time
           end
-        }
+          @b_records.each do |b_record|
+             coords = Location.to_dec(b_record[4..5]) << b_record[8].to_f
+             xml.gx :coord, coords.join(" ")
+          end
+        end
       }
     end
     
