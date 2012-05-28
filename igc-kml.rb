@@ -8,6 +8,9 @@ ERROR_NO_SUCH_FILE_DIR = -1
 ERROR_DIRECTORY = -2
 
 REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})(.*)$/i
+REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
+REGEX_H_DTE = /^hf(dte)((\d{2})(\d{2})(\d{2}))/i
+REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
 
 module Location
   
@@ -96,13 +99,19 @@ class Converter
 
   def parse_igc
     # parse utc date with groups HFDTE DD MM YY
-    @date = @igc.match(/^(HFDTE)(\d{2})(\d{2})(\d{2})/)
+    @date = @igc.match(REGEX_H_DTE)
     
     # parse a records
-    @a_records = @igc.scan(REGEX_A)
+    @a_records = @igc.match(REGEX_A)
+    
+    # parse h records
+    @h_records = @igc.scan(REGEX_H)
     
     # parse b records with groups B HH MM SS DDMMmmm N/S DDDMMmmm E/W A/V PPPPP GGGGG
     @b_records = @igc.scan(/^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/)
+    
+    # parse l records
+    @l_records = @igc.scan(REGEX_L)
     
   end
 
@@ -113,10 +122,33 @@ class Converter
     xml.kml "xmlns" => "http://www.opengis.net/kml/2.2", "xmlns:gx" => "http://www.google.com/kml/ext/2.2" do
       xml.Placemark {
         xml.name @filename
+        xml.description do
+          
+          description = String.new
+          
+          # Required
+          description << @a_records[3] unless @a_records[3].nil?
+          description << @date.to_a[1..2].join(": ") << "\n"
+
+          @h_records.each do |h_record|
+            description << h_record[0] << ":" << h_record[2]
+          end
+          
+          @l_records.each do |l_record|
+            case l_record[0]
+            when "XSX"
+              l_record[1].split(";").each do |l|
+                description << l << "\n" 
+              end
+            end
+          end
+          
+          xml.cdata! description
+        end
         xml.gx:Track do
           xml.altitudeMode "absolute"
           @b_records.each do |b_record|
-             time = DateTime.new(2000 + @date[4].to_i, @date[3].to_i, @date[2].to_i, 
+             time = DateTime.new(2000 + @date[5].to_i, @date[4].to_i, @date[3].to_i, 
                b_record[1].to_i, b_record[2].to_i, b_record[3].to_i)
              xml.when time
           end
