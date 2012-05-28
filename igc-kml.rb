@@ -7,7 +7,7 @@ require 'optparse'
 ERROR_NO_SUCH_FILE_DIR = -1
 ERROR_DIRECTORY = -2
 
-REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})(.*)$/i
+REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
 REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
 REGEX_H_DTE = /^hf(dte)((\d{2})(\d{2})(\d{2}))/i
 REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
