@@ -117,33 +117,46 @@ class Converter
 
   def build_kml
     
+    # Build HTML for description
+    html = Builder::XmlMarkup.new(:indent => 2)
+    html.p do
+      unless @a_records[3].nil? then html.strong "Device:"; html.em @a_records[3].strip; html.br end
+    end
+    html.p do
+      @h_records.each do |h|
+        if h.include?("PLT") && !h[2].strip.empty? then html.strong "Pilot:"; html.em h[2].strip; html.br end
+        if h.include?("CID") && !h[2].strip.empty? then html.strong "Competition ID:"; html.em h[2].strip; html.br end
+        if h.include?("GTY") && !h[2].strip.empty? then html.strong "Glider:"; html.em h[2].strip; html.br end
+        if h.include?("GID") && !h[2].strip.empty? then html.strong "Glider ID:"; html.em h[2].strip; html.br end
+        if h.include?("CCL") && !h[2].strip.empty? then html.strong "Competition class:"; html.em h[2].strip; html.br end
+        if h.include?("SIT") && !h[2].strip.empty? then html.strong "Site:"; html.em h[2].strip; html.br end
+      end
+      html.strong "Date:"; html.em @date[3..5].join("."); html.br
+    end
+    
+     # @h_records.each do |h_record|
+     #       description << h_record[0] << ":" << h_record[2]
+     #     end
+     #     
+     #     @l_records.each do |l_record|
+     #       case l_record[0]
+     #       when "XSX"
+     #         l_record[1].split(";").each do |l|
+     #           description << l << "\n" 
+     #         end
+     #       end
+     #     end
+     #     
+     #     xml.cdata! description
+    
+    # Build KML
     xml = Builder::XmlMarkup.new(:indent => 2)
     xml.instruct!
     xml.kml "xmlns" => "http://www.opengis.net/kml/2.2", "xmlns:gx" => "http://www.google.com/kml/ext/2.2" do
       xml.Placemark {
         xml.name @filename
         xml.description do
-          
-          description = String.new
-          
-          # Required
-          description << @a_records[3] unless @a_records[3].nil?
-          description << @date.to_a[1..2].join(": ") << "\n"
-
-          @h_records.each do |h_record|
-            description << h_record[0] << ":" << h_record[2]
-          end
-          
-          @l_records.each do |l_record|
-            case l_record[0]
-            when "XSX"
-              l_record[1].split(";").each do |l|
-                description << l << "\n" 
-              end
-            end
-          end
-          
-          xml.cdata! description
+          xml.cdata! html.target!
         end
         xml.gx:Track do
           xml.altitudeMode "absolute"
