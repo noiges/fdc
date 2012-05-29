@@ -9,6 +9,7 @@ ERROR_NO_SUCH_FILE_DIR = -1
 ERROR_DIRECTORY = -2
 ERROR_FILE_FORMAT = -3
 ERROR_DEST_NOT_A_DIRECTORY = -7
+ERROR_MISSING_ARGUMENT=-5
 
 REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
 REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
@@ -222,7 +223,12 @@ if __FILE__ == $0
 
   end
   
-  optparse.parse!
+  begin
+    optparse.parse!
+  rescue OptionParser::MissingArgument => e
+    puts e.message
+    exit(ERROR_MISSING_ARGUMENT)
+  end
   
   puts optparse if ARGV.empty?
   
