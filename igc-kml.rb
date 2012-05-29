@@ -8,8 +8,9 @@ require 'pathname'
 ERROR_NO_SUCH_FILE_DIR = -1
 ERROR_DIRECTORY = -2
 ERROR_FILE_FORMAT = -3
+ERROR_MISSING_ARGUMENT = -5
+ERROR_INVALID_OPTION = -6
 ERROR_DEST_NOT_A_DIRECTORY = -7
-ERROR_MISSING_ARGUMENT=-5
 
 REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
 REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
@@ -228,6 +229,9 @@ if __FILE__ == $0
   rescue OptionParser::MissingArgument => e
     puts e.message
     exit(ERROR_MISSING_ARGUMENT)
+  rescue OptionParser::InvalidOption => e
+    puts e.message
+    exit(ERROR_INVALID_OPTION)
   end
   
   puts optparse if ARGV.empty?
