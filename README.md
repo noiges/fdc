@@ -1,5 +1,5 @@
 # igc-kml
-A Ruby tool for converting IGC files to KML.
+A command-line tool written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (.igc) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (.kml) for their display in Applications such as [Google Earth](earth.google.com).
 
 ## Requirements
 
