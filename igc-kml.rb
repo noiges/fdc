@@ -119,21 +119,50 @@ class Converter
     
     # Build HTML for description
     html = Builder::XmlMarkup.new(:indent => 2)
-    html.div :style => "width: 300;" do
+    html.div :style => "width: 250;" do
       html.p do
-        unless @a_records[3].nil? then html.strong "Device:"; html.em @a_records[3].strip; html.br end
+        unless @a_records[3].nil? then html.strong "Device:"; html.dfn @a_records[3].strip; html.br end
       end
       html.p do
         @h_records.each do |h|
-          if h.include?("PLT") && !h[2].strip.empty? then html.strong "Pilot:"; html.em h[2].strip; html.br end
-          if h.include?("CID") && !h[2].strip.empty? then html.strong "Competition ID:"; html.em h[2].strip; html.br end
-          if h.include?("GTY") && !h[2].strip.empty? then html.strong "Glider:"; html.em h[2].strip; html.br end
-          if h.include?("GID") && !h[2].strip.empty? then html.strong "Glider ID:"; html.em h[2].strip; html.br end
-          if h.include?("CCL") && !h[2].strip.empty? then html.strong "Competition class:"; html.em h[2].strip; html.br end
-          if h.include?("SIT") && !h[2].strip.empty? then html.strong "Site:"; html.em h[2].strip; html.br end
+          if h.include?("PLT") && !h[2].strip.empty? then html.strong "Pilot:"; html.dfn h[2].strip; html.br end
+          if h.include?("CID") && !h[2].strip.empty? then html.strong "Competition ID:"; html.dfn h[2].strip; html.br end
+          if h.include?("GTY") && !h[2].strip.empty? then html.strong "Glider:"; html.dfn h[2].strip; html.br end
+          if h.include?("GID") && !h[2].strip.empty? then html.strong "Glider ID:"; html.dfn h[2].strip; html.br end
+          if h.include?("CCL") && !h[2].strip.empty? then html.strong "Competition class:"; html.dfn h[2].strip; html.br end
+          if h.include?("SIT") && !h[2].strip.empty? then html.strong "Site:"; html.dfn h[2].strip; html.br end
         end
-        html.strong "Date:"; html.em @date[3..5].join("."); html.br
+        html.strong "Date:"; html.dfn @date[3..5].join("."); html.br
       end
+      
+      # Manufacturer-dependent L records
+      case @a_records[1]
+      when "XSX"
+        html.p do 
+          @l_records[0][1].split(";").each do |value|
+            key_val = value.split(":")
+            case key_val[0]
+            when "MC"
+              html.strong "Max. climb:"
+              html.dfn key_val[1]
+              html.br
+            when "MS"
+              html.strong "Max. sink:"
+              html.dfn key_val[1]
+              html.br
+            when "MSP"
+              html.strong "Max. speed:"
+              html.dfn key_val[1]
+              html.br
+            when "Dist"
+              html.strong "Track distance:"
+              html.dfn key_val[1]
+              html.br
+            end
+          end
+        end
+      end
+      
     end
     
      # @h_records.each do |h_record|
@@ -158,12 +187,7 @@ class Converter
       xml.Placemark {
         xml.name @filename
         xml.Snippet :maxLines => "2" do
-          summary = "Flight from "
-          @h_records.each do |h|
-            if h.include?("SIT") && !h[2].strip.empty? then summary << h[2].strip << " on " end
-          end
-          summary << @date[3..5].join(".")
-          xml.text! summary
+          xml.text! snippet
         end
         xml.description do
           xml.cdata! html.target!
@@ -185,6 +209,14 @@ class Converter
     
     @kml = xml.target!
     
+  end
+  
+  def snippet
+    summary = "Flight from "
+    @h_records.each do |h|
+      if h.include?("SIT") && !h[2].strip.empty? then summary << h[2].strip << " on " end
+    end
+    summary << @date[3..5].join(".")
   end
 
 end
