@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+
+require 'igc-kml'
+require 'optparse'
+
+options = {}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: igc-kml.rb [OPTIONS] FILEPATTERN"
+  
+  opts.separator ""
+  opts.separator "Options:"
+  
+  # Define alternative destination directory
+  options[:dest] = nil
+  opts.on( '-d', '--destination DEST', String, 'Alternative destination directory for converted KML files' ) do |dest| 
+   options[:dest] = dest
+  end
+  
+  # Define alternative destination directory
+  options[:stdout] = false
+  opts.on( '-s', '--stdout', String, 'Print converted KML to STDOUT' ) do
+   options[:stdout] = true
+  end
+
+  # Clamp track to ground and ignore altitude information
+  options[:clamp] = false
+  opts.on( '-c', '--clamp', 'Clamp track to ground') do
+    options[:clamp] = true
+  end
+  
+  # Extrude track to ground to emphasize absolute height
+  options[:extrude] = false
+  opts.on( '-e', '--extrude', 'Extrude track to ground') do
+    options[:extrude] = true
+  end
+  
+  # Extrude track to ground to emphasize absolute height
+  options[:gps] = false
+  opts.on( '-g', '--gps-alt', 'Use gps altitude instead of barometric altitude') do
+    options[:gps] = true
+  end
+  
+  # Define help
+  opts.on_tail( '-h', '--help', 'Display this help screen' ) do
+    puts opts
+    exit
+  end
+
+end
+
+begin
+  optparse.parse!
+rescue OptionParser::MissingArgument => e
+  puts e.message
+  exit(ERROR_MISSING_ARGUMENT)
+rescue OptionParser::InvalidOption => e
+  puts e.message
+  exit(ERROR_INVALID_OPTION)
+end
+
+puts optparse if ARGV.empty?
+
+ARGV.each do |file|
+  begin
+      converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps])
+  rescue Errno::EISDIR => e
+    puts e.message
+  rescue Errno::ENOENT => e
+    puts e.message
+  rescue LoadError => e
+    puts e.message
+  end
+  
+  if options[:stdout] 
+    STDOUT.puts converter.kml
+  elsif converter
+    begin
+      options[:dest] ? converter.save_kml(Pathname.new(options[:dest])) : converter.save_kml
+    rescue IOError => e
+      puts e.message
+      exit(ERROR_DEST_NOT_A_DIRECTORY)
+    rescue Errno::EACCES => e
+      puts e.message
+      exit(ERROR_WRITE_PERMISSION)
+    end
+  end
+end
