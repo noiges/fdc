@@ -5,12 +5,10 @@ require 'date'
 require 'optparse'
 require 'pathname'
 
-ERROR_NO_SUCH_FILE_DIR = -1
-ERROR_DIRECTORY = -2
-ERROR_FILE_FORMAT = -3
-ERROR_MISSING_ARGUMENT = -5
-ERROR_INVALID_OPTION = -6
-ERROR_DEST_NOT_A_DIRECTORY = -7
+ERROR_MISSING_ARGUMENT = -1
+ERROR_INVALID_OPTION = -2
+ERROR_DEST_NOT_A_DIRECTORY = -3
+ERROR_WRITE_PERMISSION = -4
 
 REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
 REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
@@ -55,10 +53,12 @@ class Converter
     @clamp = clamp
     @extrude = extrude
     
-    if @path.extname == ".igc"
+    if @path.directory?
+      raise LoadError, "Not a file but directory: " << @path
+    elsif @path.extname == ".igc"
       load_igc(@path)
     else
-      raise LoadError, "Cannot read " << @path.extname << " file"
+      raise LoadError, "Cannot read files of that type: " << @path
     end
   end
   
@@ -93,6 +93,7 @@ class Converter
     
     # parse a records
     @a_records = @igc.match(REGEX_A)
+    raise LoadError, 'Invalid file format: ' << @path unless @a_records
     
     # parse h records
     @h_records = @igc.scan(REGEX_H)
@@ -269,10 +270,8 @@ if __FILE__ == $0
         converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude])
     rescue Errno::EISDIR => e
       puts e.message
-      exit(ERROR_DIRECTORY)
     rescue Errno::ENOENT => e
       puts e.message
-      exit(ERROR_NO_SUCH_FILE_DIR)
     rescue LoadError => e
       puts e.message
     end
