@@ -54,7 +54,7 @@ class Converter
     if @path.extname == ".igc"
       load_igc(@path)
     else
-      raise LoadError, "Cannot read " << @path.extname << " files"
+      raise LoadError, "Cannot read " << @path.extname << " file"
     end
   end
   
@@ -65,7 +65,7 @@ class Converter
       file.write(@kml)
       file.close
     else
-      raise IOError, "Supplied path is not a directory"
+      raise IOError, "Destination is not a directory"
     end
   end
   
@@ -237,14 +237,13 @@ if __FILE__ == $0
       exit(ERROR_NO_SUCH_FILE_DIR)
     rescue LoadError => e
       puts e.message
-      exit(ERROR_FILE_FORMAT)
     end
     
     if options[:stdout] 
       STDOUT.puts converter.kml
-    elsif
+    elsif converter
       begin
-        options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+        options[:dest] ? converter.save_kml(Pathname.new(options[:dest])) : converter.save_kml
       rescue IOError => e
         puts e.message
         exit(ERROR_DEST_NOT_A_DIRECTORY)
