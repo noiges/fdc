@@ -3,13 +3,17 @@ require 'rubygems'
 require 'builder'
 require 'date'
 require 'optparse'
+require 'pathname'
 
 ERROR_NO_SUCH_FILE_DIR = -1
 ERROR_DIRECTORY = -2
+ERROR_FILE_FORMAT = -3
+ERROR_DEST_NOT_A_DIRECTORY = -7
 
 REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
 REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
 REGEX_H_DTE = /^hf(dte)((\d{2})(\d{2})(\d{2}))/i
+REGEX_B = /^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/
 REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
 
 module Location
@@ -44,61 +48,43 @@ class Converter
   attr_accessor :kml
   
   def initialize(path)
-    load_igc(path)
-  end
-  
-  def load_igc(path)
     
-    # Load file
-    file = File.new(path, "r")
-    @igc = file.read
-    file.close
+    @path = Pathname.new(path)
     
-    # Match filename and path
-    matches = path.match(/^((\.?\/)?(.+\/)*)((\w{8})(\.igc)*)$/)
-    
-    # Matches all of the following:
-    #     /Users/nokinen/Code/github/igc-kml/sample/25GXXXX1.igc
-    #     /Users/nokinen/Code/github/igc-kml/sample/25GXXXX1
-    #     /Users/nokinen/Code/github/igkientb/sample/25GXXXX1
-    #     ./sample/25GXXXX1.igc
-    #     ./25GXXXX1.igc
-    #     ./sample/25GXXXX1
-    #     sample/25GXXXX1.igc
-    #     25GXXXX1.igc
-    #     25GXXXX1
-    #
-    # Match 1: path without filename and extension
-    # Match 5: filename without extension
-    
-    @path = matches[1]
-    @filename = matches[5]
-    
-    parse_igc
-    build_kml
-    
-  end
-  
-  def save_kml(path = @path)
-    
-    if @kml
-       if path.match(/.$/) == "/"
-         file = File.new(path << @filename << ".kml", "w")
-       else
-         file = File.new(path << "/" << @filename << ".kml", "w")
-       end
-       file.write(@kml)
-       file.close
-     else
-       raise LoadError "No igc loaded"
+    if @path.extname == ".igc"
+      load_igc(@path)
+    else
+      raise LoadError, "Cannot read " << @path.extname << " files"
     end
-    
+  end
+  
+  def save_kml(dirname = @path.dirname)
+    if File.directory?(dirname)
+      dirname += @path.basename(@path.extname)
+      file = File.new(dirname.to_s << ".kml", "w")
+      file.write(@kml)
+      file.close
+    else
+      raise IOError, "Supplied path is not a directory"
+    end
   end
   
   private
+  
+  def load_igc(path)
+
+     # Load file
+     file = File.new(path, "r")
+     @igc = file.read
+     file.close
+
+     parse_igc
+     build_kml
+
+   end
 
   def parse_igc
-    # parse utc date with groups HFDTE DD MM YY
+    # parse utc date
     @date = @igc.match(REGEX_H_DTE)
     
     # parse a records
@@ -107,8 +93,8 @@ class Converter
     # parse h records
     @h_records = @igc.scan(REGEX_H)
     
-    # parse b records with groups B HH MM SS DDMMmmm N/S DDDMMmmm E/W A/V PPPPP GGGGG
-    @b_records = @igc.scan(/^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/)
+    # parse b records
+    @b_records = @igc.scan(REGEX_B)
     
     # parse l records
     @l_records = @igc.scan(REGEX_L)
@@ -164,21 +150,6 @@ class Converter
       end
       
     end
-    
-     # @h_records.each do |h_record|
-     #       description << h_record[0] << ":" << h_record[2]
-     #     end
-     #     
-     #     @l_records.each do |l_record|
-     #       case l_record[0]
-     #       when "XSX"
-     #         l_record[1].split(";").each do |l|
-     #           description << l << "\n" 
-     #         end
-     #       end
-     #     end
-     #     
-     #     xml.cdata! description
     
     # Build KML
     xml = Builder::XmlMarkup.new(:indent => 2)
@@ -264,12 +235,20 @@ if __FILE__ == $0
     rescue Errno::ENOENT => e
       puts e.message
       exit(ERROR_NO_SUCH_FILE_DIR)
+    rescue LoadError => e
+      puts e.message
+      exit(ERROR_FILE_FORMAT)
     end
     
     if options[:stdout] 
       STDOUT.puts converter.kml
     elsif
-      options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+      begin
+        options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+      rescue IOError => e
+        puts e.message
+        exit(ERROR_DEST_NOT_A_DIRECTORY)
+      end
     end
   end
   
