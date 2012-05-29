@@ -3,39 +3,28 @@ A Ruby tool for converting IGC files to KML.
 
 ## Requirements
 
-* Ruby 1.9.3
-* Rubygem builder 3.0.0
+* At least Ruby 1.8.7
+* RubyGems
 
 ## Setup
 
-1. Download and install ruby from [ruby-lang.org](http://www.ruby-lang.org/en/downloads/)
-2. Open your console and execute `gem install builder`
+1. Download and install latest Ruby from [ruby-lang.org](http://www.ruby-lang.org/en/downloads/)
+2. If a version of Ruby beyond 1.9.2 is already installed and RubyGems is missing, get it from [rubygems.org](http://rubygems.org/pages/download)
+
+## Install
+### From source
+1. Build: `gem build igc-kml.gemspec` 
+2. Install locally: `gem install igc-kml-X-X-X.gem` 
+
+### From RubyGems.org
+1. `gem install igc-kml` 
 
 ## Usage
-Plot usage:
-
-	ruby igc-kml.rb
 	
-Convert one or more IGC files to KML:
+Convert one or more .igc files to .kml:
 
-	ruby igc-kml.rb <filepattern>
-	
-Convert IGC files to KML with alternative destination directory:
+	% igc-kml <filepattern>
 
-	ruby igc-kml.rb -d DEST <filepattern>
-	
-Convert IGC file to KML and output on STDOUT:
+See help: 
 
-	ruby igc-kml.rb -s <filepattern>
-	
-Clamp to ground:
-
-	ruby igc-kml.rb -c <filepattern>
-	
-Extrude to ground:
-
-	ruby igc-kml.rb -e <filepattern>
-
-Use gps altitude instead of barometric altitude:
-
-	ruby igc-kml.rb -g <filepattern>
+	% igc-kml -h
