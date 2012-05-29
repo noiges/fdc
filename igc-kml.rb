@@ -54,11 +54,11 @@ class Converter
     @extrude = extrude
     
     if @path.directory?
-      raise LoadError, "Not a file but directory: " << @path
+      raise LoadError, "Not a file but directory - " << @path
     elsif @path.extname == ".igc"
       load_igc(@path)
     else
-      raise LoadError, "Cannot read files of that type: " << @path
+      raise LoadError, "Cannot read files of that type - " << @path
     end
   end
   
@@ -69,7 +69,7 @@ class Converter
       file.write(@kml)
       file.close
     else
-      raise IOError, "Destination is not a directory"
+      raise IOError, "Destination is not a directory - " << dirname
     end
   end
   
@@ -93,7 +93,7 @@ class Converter
     
     # parse a records
     @a_records = @igc.match(REGEX_A)
-    raise LoadError, 'Invalid file format: ' << @path unless @a_records
+    raise LoadError, 'Invalid file format - ' << @path unless @a_records
     
     # parse h records
     @h_records = @igc.scan(REGEX_H)
@@ -284,6 +284,9 @@ if __FILE__ == $0
       rescue IOError => e
         puts e.message
         exit(ERROR_DEST_NOT_A_DIRECTORY)
+      rescue Errno::EACCES => e
+        puts e.message
+        exit(ERROR_WRITE_PERMISSION)
       end
     end
   end
