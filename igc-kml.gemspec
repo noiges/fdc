@@ -11,4 +11,6 @@ Gem::Specification.new do |s|
   s.email       = 'tobias@noig.es'
   s.files       = ["lib/igc-kml.rb"]
   s.homepage    = 'https://github.com/nokinen/igc-kml'
+  s.add_runtime_dependency "builder"
+  s.executables << 'igc-kml'
 end

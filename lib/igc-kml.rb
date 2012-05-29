@@ -1,6 +1,6 @@
-require 'builder'
 require 'date'
 require 'pathname'
+require 'builder'
 
 ERROR_MISSING_ARGUMENT = -1
 ERROR_INVALID_OPTION = -2
