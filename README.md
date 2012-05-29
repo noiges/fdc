@@ -14,9 +14,10 @@ This is the primary, convenient way to install the latest version of this tool. 
 ### From source
 If your are a developer and want to install from source, follow these steps:
 
-1. Clone this repository: `git clone` 
-2. Build: `gem build igc-kml.gemspec`
-3. Install locally: `gem install igc-kml-X-X-X.gem`
+1. Clone this repository: `git clone git@github.com:nokinen/igc-kml.git`
+2. `cd igc-kml` 
+3. Build: `gem build igc-kml.gemspec`
+4. Install locally: `gem install igc-kml-X-X-X.gem`
 
 ## Usage
 	
