@@ -49,10 +49,11 @@ class Converter
   
   attr_accessor :kml
   
-  def initialize(path, clamp = false)
+  def initialize(path, clamp=false, extrude=false)
     
     @path = Pathname.new(path)
     @clamp = clamp
+    @extrude = extrude
     
     if @path.extname == ".igc"
       load_igc(@path)
@@ -179,11 +180,8 @@ class Converter
         end
         xml.gx:Track do
           
-          if @clamp
-            xml.altitudeMode "clampToGround"
-          else
-            xml.altitudeMode "absolute"
-          end
+          @clamp ? xml.altitudeMode("clampToGround") : xml.altitudeMode("absolute")
+          @extrude ? xml.extrude("1") : xml.extrude("0")
           
           @b_records.each do |b_record|
              time = DateTime.new(2000 + @date[5].to_i, @date[4].to_i, @date[3].to_i, 
@@ -233,10 +231,17 @@ if __FILE__ == $0
     opts.on( '-s', '--stdout', String, 'Print converted KML to STDOUT' ) do
      options[:stdout] = true
     end
-    
+
+    # Clamp track to ground and ignore altitude information
     options[:clamp] = false
     opts.on( '-c', '--clamp', 'Clamp track to ground') do
       options[:clamp] = true
+    end
+    
+    # Extrude track to ground to emphasize absolute height
+    options[:extrude] = false
+    opts.on( '-e', '--extrude', 'Extrude track to ground') do
+      options[:extrude] = true
     end
     
     # Define help
@@ -261,11 +266,7 @@ if __FILE__ == $0
   
   ARGV.each do |file|
     begin
-      if options[:clamp]
-        converter = Converter.new(file, true)
-      else
-        converter = Converter.new(file)
-      end
+        converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude])
     rescue Errno::EISDIR => e
       puts e.message
       exit(ERROR_DIRECTORY)
