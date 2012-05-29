@@ -157,6 +157,14 @@ class Converter
     xml.kml "xmlns" => "http://www.opengis.net/kml/2.2", "xmlns:gx" => "http://www.google.com/kml/ext/2.2" do
       xml.Placemark {
         xml.name @filename
+        xml.Snippet :maxLines => "2" do
+          summary = "Flight from "
+          @h_records.each do |h|
+            if h.include?("SIT") && !h[2].strip.empty? then summary << h[2].strip << " on " end
+          end
+          summary << @date[3..5].join(".")
+          xml.text! summary
+        end
         xml.description do
           xml.cdata! html.target!
         end
