@@ -3,7 +3,13 @@ A Ruby tool for converting IGC files to KML.
 
 ## Requirements
 
-At least ruby 1.8.7, running on a unix or linux system.
+* Ruby 1.9.3
+* Rubygem builder 3.0.0
+
+## Setup
+
+1. Download and install ruby from [ruby-lang.org](http://www.ruby-lang.org/en/downloads/)
+2. Open your console and execute `gem install builder`
 
 ## Usage
 Plot usage:
