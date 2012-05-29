@@ -47,11 +47,12 @@ class Converter
   
   attr_accessor :kml
   
-  def initialize(path, clamp=false, extrude=false)
+  def initialize(path, clamp=false, extrude=false, gps=false)
     
     @path = Pathname.new(path)
     @clamp = clamp
     @extrude = extrude
+    @gps = gps
     
     if @path.directory?
       raise LoadError, "Not a file but directory - " << @path
@@ -190,8 +191,9 @@ class Converter
              xml.when time
           end
           @b_records.each do |b_record|
-             coords = Location.to_dec(b_record[4..5]) << b_record[8].to_f
-             xml.gx :coord, coords.join(" ")
+            coords = Location.to_dec(b_record[4..5])
+            @gps ? coords << b_record[8].to_f : coords << b_record[7].to_f
+            xml.gx :coord, coords.join(" ")
           end
         end
       }
@@ -245,6 +247,12 @@ if __FILE__ == $0
       options[:extrude] = true
     end
     
+    # Extrude track to ground to emphasize absolute height
+    options[:gps] = false
+    opts.on( '-g', '--gps-alt', 'Use gps altitude instead of barometric altitude') do
+      options[:gps] = true
+    end
+    
     # Define help
     opts.on_tail( '-h', '--help', 'Display this help screen' ) do
       puts opts
@@ -267,7 +275,7 @@ if __FILE__ == $0
   
   ARGV.each do |file|
     begin
-        converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude])
+        converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps])
     rescue Errno::EISDIR => e
       puts e.message
     rescue Errno::ENOENT => e
