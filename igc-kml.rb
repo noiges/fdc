@@ -158,12 +158,23 @@ class Converter
     xml.instruct!
     xml.kml "xmlns" => "http://www.opengis.net/kml/2.2", "xmlns:gx" => "http://www.google.com/kml/ext/2.2" do
       xml.Placemark {
-        xml.name @filename
+        xml.name @path.basename(@path.extname)
         xml.Snippet :maxLines => "2" do
           xml.text! snippet
         end
         xml.description do
           xml.cdata! html.target!
+        end
+        xml.Style do
+          xml.IconStyle do
+            xml.Icon do 
+              xml.href "http://earth.google.com/images/kml-icons/track-directional/track-0.png"
+            end
+          end
+          xml.LineStyle do
+            xml.color "99ffac59"
+            xml.width "4"
+          end
         end
         xml.gx:Track do
           xml.altitudeMode "absolute"
