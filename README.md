@@ -6,7 +6,7 @@ A Ruby tool for converting IGC files to KML.
 At least ruby 1.8.7, running on a unix or linux system.
 
 ## Usage
-See help:
+Plot usage:
 
 	ruby igc-kml.rb
 	
@@ -21,3 +21,15 @@ Convert IGC files to KML with alternative destination directory:
 Convert IGC file to KML and output on STDOUT:
 
 	ruby igc-kml.rb -s <filepattern>
+	
+Clamp to ground:
+
+	ruby igc-kml.rb -c <filepattern>
+	
+Extrude to ground:
+
+	ruby igc-kml.rb -e <filepattern>
+
+Use gps altitude instead of barometric altitude:
+
+	ruby igc-kml.rb -g <filepattern>
