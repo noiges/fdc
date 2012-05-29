@@ -130,19 +130,19 @@ class Converter
             case key_val[0]
             when "MC"
               html.strong "Max. climb:"
-              html.dfn key_val[1]
+              html.dfn key_val[1].strip << " m/s"
               html.br
             when "MS"
               html.strong "Max. sink:"
-              html.dfn key_val[1]
+              html.dfn key_val[1].strip << " m/s"
               html.br
             when "MSP"
               html.strong "Max. speed:"
-              html.dfn key_val[1]
+              html.dfn key_val[1].strip << " km/h"
               html.br
             when "Dist"
               html.strong "Track distance:"
-              html.dfn key_val[1]
+              html.dfn key_val[1].strip << " km"
               html.br
             end
           end
