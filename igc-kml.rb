@@ -218,7 +218,7 @@ if __FILE__ == $0
   options = {}
   
   optparse = OptionParser.new do |opts|
-    opts.banner = "Usage: igc-kml.rb [OPTIONS] FILEPATTERN…"
+    opts.banner = "Usage: igc-kml.rb [OPTIONS] FILEPATTERN"
     
     opts.separator ""
     opts.separator "Options:"
