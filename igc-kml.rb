@@ -49,9 +49,10 @@ class Converter
   
   attr_accessor :kml
   
-  def initialize(path)
+  def initialize(path, clamp = false)
     
     @path = Pathname.new(path)
+    @clamp = clamp
     
     if @path.extname == ".igc"
       load_igc(@path)
@@ -177,7 +178,13 @@ class Converter
           end
         end
         xml.gx:Track do
-          xml.altitudeMode "absolute"
+          
+          if @clamp
+            xml.altitudeMode "clampToGround"
+          else
+            xml.altitudeMode "absolute"
+          end
+          
           @b_records.each do |b_record|
              time = DateTime.new(2000 + @date[5].to_i, @date[4].to_i, @date[3].to_i, 
                b_record[1].to_i, b_record[2].to_i, b_record[3].to_i)
@@ -227,6 +234,11 @@ if __FILE__ == $0
      options[:stdout] = true
     end
     
+    options[:clamp] = false
+    opts.on( '-c', '--clamp', 'Clamp track to ground') do
+      options[:clamp] = true
+    end
+    
     # Define help
     opts.on_tail( '-h', '--help', 'Display this help screen' ) do
       puts opts
@@ -249,7 +261,11 @@ if __FILE__ == $0
   
   ARGV.each do |file|
     begin
-      converter = Converter.new(file)
+      if options[:clamp]
+        converter = Converter.new(file, true)
+      else
+        converter = Converter.new(file)
+      end
     rescue Errno::EISDIR => e
       puts e.message
       exit(ERROR_DIRECTORY)
