@@ -119,29 +119,22 @@ class Converter
     
     # Build HTML for description
     html = Builder::XmlMarkup.new(:indent => 2)
-    html.table :border => "0" do
-      unless @a_records[3].nil?
-        html.tr do
-          html.td "Device:"
-          html.td @a_records[3].strip
+    html.div :style => "width: 300;" do
+      html.p do
+        unless @a_records[3].nil? then html.strong "Device:"; html.em @a_records[3].strip; html.br end
+      end
+      html.p do
+        @h_records.each do |h|
+          if h.include?("PLT") && !h[2].strip.empty? then html.strong "Pilot:"; html.em h[2].strip; html.br end
+          if h.include?("CID") && !h[2].strip.empty? then html.strong "Competition ID:"; html.em h[2].strip; html.br end
+          if h.include?("GTY") && !h[2].strip.empty? then html.strong "Glider:"; html.em h[2].strip; html.br end
+          if h.include?("GID") && !h[2].strip.empty? then html.strong "Glider ID:"; html.em h[2].strip; html.br end
+          if h.include?("CCL") && !h[2].strip.empty? then html.strong "Competition class:"; html.em h[2].strip; html.br end
+          if h.include?("SIT") && !h[2].strip.empty? then html.strong "Site:"; html.em h[2].strip; html.br end
         end
+        html.strong "Date:"; html.em @date[3..5].join("."); html.br
       end
     end
-    
-    # html.p do
-    #       unless @a_records[3].nil? then html.strong "Device:"; html.em @a_records[3].strip; html.br end
-    #     end
-    #     html.p do
-    #       @h_records.each do |h|
-    #         if h.include?("PLT") && !h[2].strip.empty? then html.strong "Pilot:"; html.em h[2].strip; html.br end
-    #         if h.include?("CID") && !h[2].strip.empty? then html.strong "Competition ID:"; html.em h[2].strip; html.br end
-    #         if h.include?("GTY") && !h[2].strip.empty? then html.strong "Glider:"; html.em h[2].strip; html.br end
-    #         if h.include?("GID") && !h[2].strip.empty? then html.strong "Glider ID:"; html.em h[2].strip; html.br end
-    #         if h.include?("CCL") && !h[2].strip.empty? then html.strong "Competition class:"; html.em h[2].strip; html.br end
-    #         if h.include?("SIT") && !h[2].strip.empty? then html.strong "Site:"; html.em h[2].strip; html.br end
-    #       end
-    #       html.strong "Date:"; html.em @date[3..5].join("."); html.br
-    #     end
     
      # @h_records.each do |h_record|
      #       description << h_record[0] << ":" << h_record[2]
