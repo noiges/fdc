@@ -13,41 +13,69 @@ REGEX_H_DTE = /^hf(dte)((\d{2})(\d{2})(\d{2}))/i
 REGEX_B = /^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/
 REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
 
+##
+# Helper module with functions to convert the geocoordinate notation of <tt>.igc</tt> files to regular geocoordinates.
+# 
 module Location
-  ## 
-  # Convert geocoordinates in MinDec notation to Dec notation
-  #
-  # Returns an array of floats with longitude and latitude in dec notation that is used by Converter
-  def Location.to_dec(mindec) 
+
+  ##
+  # Convert geocoordinates in .igc mindec notation to dec notation. Returns 
+  # 
+  # * *Args*:
+  #   - +long+ -> The long value in igc notation as str
+  #   - +lat+ -> The lat value in igc notation as str
+  # * *Returns*:
+  #   - Longitude and Latitude in dec notation as float.
+  # 
+  # Example:
+  #   Location.to_dec("01343272E", "4722676N")  #=> [13.7212, 47.37793333333333]
+  # 
+  # :call-seq:
+  #   Location.to_dec(long, lat) -> float_array
+  # 
+  def Location.to_dec(long, lat)
     
-    lat = mindec[0].match(/^(\d{2})((\d{2})(\d{3}))(N|S)/)
-    long = mindec[1].match(/^(\d{3})((\d{2})(\d{3}))(E|W)/)
+    long_m = long.match(/^(\d{3})((\d{2})(\d{3}))(E|W)/)
+    lat_m = lat.match(/^(\d{2})((\d{2})(\d{3}))(N|S)/)
     
     # Convert minutes to decimal
-    lat_dec = lat[1].to_f + (lat[2].to_f / 1000 / 60)
-    long_dec = long[1].to_f + (long[2].to_f / 1000 / 60)
+    long_dec = long_m[1].to_f + (long_m[2].to_f / 1000 / 60)
+    lat_dec = lat_m[1].to_f + (lat_m[2].to_f / 1000 / 60)
     
     # Change signs according to direction
-    lat_dec *= (-1) if long[5] == "S"
-    long_dec *= (-1) if long[5] == "W"
+    long_dec *= (-1) if long_m[5] == "W"
+    lat_dec *= (-1) if lat_m[5] == "S"
     
-    dec = [long_dec, lat_dec]
-
-  end
-
-  # Convert from Dec to MinDec notation
-  def Location.to_mindec(dec)
-    raise NotImplementedError
+    return long_dec, lat_dec
   end
   
 end
 
+=begin rdoc
+  A +Converter+ object that holds the resulting kml after correct initialization with an <tt>.igc</tt> file. This object does also provide a function to write the <tt>.kml</tt> file to the file system.
+  
+  Usage:
+    converter = Converter.new("path/to/file.igc")
+    converter.save_kml()
+=end
 class Converter
   
+  ## 
+  # A str holding the converted kml file.
   attr_accessor :kml
   
+  ##
+  # Creates a new Converter object and loads the igc file from the provided +path+. 
+  # 
+  # * *Args*:
+  #   - +path+ -> The path to the <tt>.igc</tt> file
+  #   - +clamp+ -> true if the track should be clamped to the ground
+  #   - +extrude+ -> true if the track should be extruded to the ground
+  #   - +gps+ -> true if gps altitude information should be used 
+  # * *Raises*:
+  #   - +LoadError+ -> if path is a directory or the filetype cannot be read
   def initialize(path, clamp=false, extrude=false, gps=false)
-    
+
     @path = Pathname.new(path)
     @clamp = clamp
     @extrude = extrude
@@ -62,6 +90,13 @@ class Converter
     end
   end
   
+  ##
+  # Save the value of the +kml+ attribute to disk. A alternative +dirname+ for the output file can be supplied. If no +dirname+ is supplied, the file is written to the same location as the input file.
+  # 
+  # * *Args*:
+  #   - +dirname+ -> The alternative output directory
+  # * *Raises*:
+  #   - +IOError+ -> if dirname is not a directory
   def save_kml(dirname = @path.dirname)
     if File.directory?(dirname)
       dirname += @path.basename(@path.extname)
@@ -75,6 +110,8 @@ class Converter
   
   private
   
+  ##
+  # Load igc file from supplied path
   def load_igc(path)
 
      # Load file
@@ -86,7 +123,9 @@ class Converter
      build_kml
 
    end
-
+  
+  ##
+  # Parse igc file content
   def parse_igc
     # parse utc date
     @date = @igc.match(REGEX_H_DTE)
@@ -106,6 +145,8 @@ class Converter
     
   end
 
+  ##
+  # Build kml from parsed data
   def build_kml
     
     # Build HTML for description
@@ -190,7 +231,7 @@ class Converter
              xml.when time
           end
           @b_records.each do |b_record|
-            coords = Location.to_dec(b_record[4..5])
+            coords = Location.to_dec(b_record[5], b_record[4])
             @gps ? coords << b_record[8].to_f : coords << b_record[7].to_f
             xml.gx :coord, coords.join(" ")
           end
@@ -202,6 +243,8 @@ class Converter
     
   end
   
+  ##
+  # Generate Snippet tag content
   def snippet
     summary = "Flight from "
     @h_records.each do |h|
