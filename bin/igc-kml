@@ -69,9 +69,7 @@ puts optparse if ARGV.empty?
 ARGV.each do |file|
   begin
       converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps])
-  rescue Errno::EISDIR => e
-    puts e.message
-  rescue Errno::ENOENT => e
+  rescue IOError => e
     puts e.message
   rescue LoadError => e
     puts e.message

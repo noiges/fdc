@@ -53,17 +53,17 @@ class Converter
   #   ground
   # @param [Boolean] gps Whether GPS altitude information should be used
   # 
-  # @raise [LoadError] If path is a directory or the wrong file extension is
-  #   used
+  # @raise [LoadError] If the file has an incompatible extension
+  # @raise [IOError] If the supplied path is a directory
   def initialize(path, clamp=false, extrude=false, gps=false)
 
     @path = Pathname.new(path)
     @clamp = clamp
     @extrude = extrude
     @gps = gps
-    
+
     if @path.directory?
-      raise LoadError, "Not a file but directory - " << @path.to_s
+      raise IOError, "Not a file but directory - " << @path.to_s
     elsif @path.extname == ".igc"
       load_igc(@path)
     else
@@ -101,7 +101,14 @@ class Converter
   def load_igc(path)
 
      # Load file
-     file = File.new(path, "r")
+     begin
+       file = File.new(path, "r")
+     rescue Errno::EISDIR => e
+       raise IOError e.message
+     rescue Errno::ENOENT => e
+       raise IOError e.message
+     end
+     
      @igc = file.read
      file.close
 
