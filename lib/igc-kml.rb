@@ -14,9 +14,11 @@ REGEX_B = /^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/
 REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
 
 module Location
-  
-  # Convert from MinDec to Dec notation
-  def Location.to_dec(mindec)
+  ## 
+  # Convert geocoordinates in MinDec notation to Dec notation
+  #
+  # Returns an array of floats with longitude and latitude in dec notation that is used by Converter
+  def Location.to_dec(mindec) 
     
     lat = mindec[0].match(/^(\d{2})((\d{2})(\d{3}))(N|S)/)
     long = mindec[1].match(/^(\d{3})((\d{2})(\d{3}))(E|W)/)
@@ -52,11 +54,11 @@ class Converter
     @gps = gps
     
     if @path.directory?
-      raise LoadError, "Not a file but directory - " << @path
+      raise LoadError, "Not a file but directory - " << @path.to_s
     elsif @path.extname == ".igc"
       load_igc(@path)
     else
-      raise LoadError, "Cannot read files of that type - " << @path
+      raise LoadError, "Cannot read files of that type - " << @path.to_s
     end
   end
   
@@ -91,7 +93,7 @@ class Converter
     
     # parse a records
     @a_records = @igc.match(REGEX_A)
-    raise LoadError, 'Invalid file format - ' << @path unless @a_records
+    raise LoadError, 'Invalid file format - ' << @path.to_s unless @a_records
     
     # parse h records
     @h_records = @igc.scan(REGEX_H)
