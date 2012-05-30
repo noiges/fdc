@@ -2,37 +2,16 @@ require 'date'
 require 'pathname'
 require 'builder'
 
-ERROR_MISSING_ARGUMENT = -1
-ERROR_INVALID_OPTION = -2
-ERROR_DEST_NOT_A_DIRECTORY = -3
-ERROR_WRITE_PERMISSION = -4
-
-REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
-REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
-REGEX_H_DTE = /^hf(dte)((\d{2})(\d{2})(\d{2}))/i
-REGEX_B = /^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/
-REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
-
-##
-# Helper module with functions to convert the geocoordinate notation of <tt>.igc</tt> files to regular geocoordinates.
-# 
+# Module with helper functions for geocoordinate conversion
 module Location
-
-  ##
-  # Convert geocoordinates in .igc mindec notation to dec notation. Returns 
+  
+  # Convert coordinates from mindec notation of IGC to dec notation
   # 
-  # * *Args*:
-  #   - +long+ -> The long value in igc notation as str
-  #   - +lat+ -> The lat value in igc notation as str
-  # * *Returns*:
-  #   - Longitude and Latitude in dec notation as float.
-  # 
-  # Example:
-  #   Location.to_dec("01343272E", "4722676N")  #=> [13.7212, 47.37793333333333]
-  # 
-  # :call-seq:
-  #   Location.to_dec(long, lat) -> float_array
-  # 
+  # @param [String] long The longitude from the igc file
+  # @param [String] lat  The Latitude from the igc file
+  # @return [Float, Float] Longitude and Latitude in decimal notation
+  # @example Convert a pair of coordinates
+  #   Location.to_dec("01343272E", "4722676N")  #=>[13.7212,47.37793333333333]
   def Location.to_dec(long, lat)
     
     long_m = long.match(/^(\d{3})((\d{2})(\d{3}))(E|W)/)
@@ -51,29 +30,31 @@ module Location
   
 end
 
-=begin rdoc
-  A +Converter+ object that holds the resulting kml after correct initialization with an <tt>.igc</tt> file. This object does also provide a function to write the <tt>.kml</tt> file to the file system.
-  
-  Usage:
-    converter = Converter.new("path/to/file.igc")
-    converter.save_kml()
-=end
+# After initialization, a Converter object loads a IGC file from disk, parses
+# it, and creates the corresponding KML file.
+# 
+# @!attribute [r] kml
+#   @return [String] The KML document
+# 
+# @example
+#   converter = Converter.new "path/to/file.igc"
+#   converter.save_kml
 class Converter
   
-  ## 
-  # A str holding the converted kml file.
+  # The KML document
   attr_accessor :kml
   
-  ##
-  # Creates a new Converter object and loads the igc file from the provided +path+. 
+  # Create a new Converter object, load and parse the IGC file and build the
+  # KML document.
   # 
-  # * *Args*:
-  #   - +path+ -> The path to the <tt>.igc</tt> file
-  #   - +clamp+ -> true if the track should be clamped to the ground
-  #   - +extrude+ -> true if the track should be extruded to the ground
-  #   - +gps+ -> true if gps altitude information should be used 
-  # * *Raises*:
-  #   - +LoadError+ -> if path is a directory or the filetype cannot be read
+  # @param [String] path The path to the IGC file
+  # @param [Boolean] clamp Whether the track should be clamped to the ground
+  # @param [Boolean] extrude Whether the track should be extruded to the
+  #   ground
+  # @param [Boolean] gps Whether GPS altitude information should be used
+  # 
+  # @raise [LoadError] If path is a directory or the wrong file extension is
+  #   used
   def initialize(path, clamp=false, extrude=false, gps=false)
 
     @path = Pathname.new(path)
@@ -90,13 +71,12 @@ class Converter
     end
   end
   
-  ##
-  # Save the value of the +kml+ attribute to disk. A alternative +dirname+ for the output file can be supplied. If no +dirname+ is supplied, the file is written to the same location as the input file.
+  # Write the KML document to disk.
   # 
-  # * *Args*:
-  #   - +dirname+ -> The alternative output directory
-  # * *Raises*:
-  #   - +IOError+ -> if dirname is not a directory
+  # @param [Pathname] dirname The alternative output directory. If nothing is
+  #   supplied the files are written to the same location as the IGC input
+  #   file.
+  # @raise [IOError] if dirname is not a directory
   def save_kml(dirname = @path.dirname)
     if File.directory?(dirname)
       dirname += @path.basename(@path.extname)
@@ -110,7 +90,13 @@ class Converter
   
   private
   
-  ##
+  # Regular expressions for file parsing
+  REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
+  REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
+  REGEX_H_DTE = /^hf(dte)((\d{2})(\d{2})(\d{2}))/i
+  REGEX_B = /^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/
+  REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
+  
   # Load igc file from supplied path
   def load_igc(path)
 
@@ -124,7 +110,6 @@ class Converter
 
    end
   
-  ##
   # Parse igc file content
   def parse_igc
     # parse utc date
@@ -145,7 +130,6 @@ class Converter
     
   end
 
-  ##
   # Build kml from parsed data
   def build_kml
     
@@ -153,18 +137,48 @@ class Converter
     html = Builder::XmlMarkup.new(:indent => 2)
     html.div :style => "width: 250;" do
       html.p do
-        unless @a_records[3].nil? then html.strong "Device:"; html.dfn @a_records[3].strip; html.br end
+        unless @a_records[3].nil? then 
+          html.strong "Device:"
+          html.dfn @a_records[3].strip
+          html.br 
+        end
       end
       html.p do
         @h_records.each do |h|
-          if h.include?("PLT") && !h[2].strip.empty? then html.strong "Pilot:"; html.dfn h[2].strip; html.br end
-          if h.include?("CID") && !h[2].strip.empty? then html.strong "Competition ID:"; html.dfn h[2].strip; html.br end
-          if h.include?("GTY") && !h[2].strip.empty? then html.strong "Glider:"; html.dfn h[2].strip; html.br end
-          if h.include?("GID") && !h[2].strip.empty? then html.strong "Glider ID:"; html.dfn h[2].strip; html.br end
-          if h.include?("CCL") && !h[2].strip.empty? then html.strong "Competition class:"; html.dfn h[2].strip; html.br end
-          if h.include?("SIT") && !h[2].strip.empty? then html.strong "Site:"; html.dfn h[2].strip; html.br end
+          if h.include?("PLT") && !h[2].strip.empty? then 
+            html.strong "Pilot:"
+            html.dfn h[2].strip
+            html.br
+          end
+          if h.include?("CID") && !h[2].strip.empty? then 
+            html.strong "Competition ID:"
+            html.dfn h[2].strip
+            html.br
+          end
+          if h.include?("GTY") && !h[2].strip.empty? then 
+            html.strong "Glider:"
+            html.dfn h[2].strip
+            html.br
+          end
+          if h.include?("GID") && !h[2].strip.empty? then
+            html.strong "Glider ID:"
+            html.dfn h[2].strip
+            html.br
+          end
+          if h.include?("CCL") && !h[2].strip.empty? then 
+            html.strong "Competition class:"
+            html.dfn h[2].strip
+            html.br 
+          end
+          if h.include?("SIT") && !h[2].strip.empty? then 
+            html.strong "Site:"
+            html.dfn h[2].strip
+            html.br
+          end
         end
-        html.strong "Date:"; html.dfn @date[3..5].join("."); html.br
+        html.strong "Date:"
+        html.dfn @date[3..5].join(".")
+        html.br
       end
       
       # Manufacturer-dependent L records
@@ -227,7 +241,7 @@ class Converter
           
           @b_records.each do |b_record|
              time = DateTime.new(2000 + @date[5].to_i, @date[4].to_i, @date[3].to_i, 
-               b_record[1].to_i, b_record[2].to_i, b_record[3].to_i)
+              b_record[1].to_i, b_record[2].to_i, b_record[3].to_i)
              xml.when time
           end
           @b_records.each do |b_record|
@@ -243,12 +257,13 @@ class Converter
     
   end
   
-  ##
   # Generate Snippet tag content
   def snippet
     summary = "Flight from "
     @h_records.each do |h|
-      if h.include?("SIT") && !h[2].strip.empty? then summary << h[2].strip << " on " end
+      if h.include?("SIT") && !h[2].strip.empty? then 
+        summary << h[2].strip << " on " 
+      end
     end
     summary << @date[3..5].join(".")
   end

@@ -3,6 +3,11 @@
 require 'igc-kml'
 require 'optparse'
 
+ERROR_MISSING_ARGUMENT = -1
+ERROR_INVALID_OPTION = -2
+ERROR_DEST_NOT_A_DIRECTORY = -3
+ERROR_WRITE_PERMISSION = -4
+
 options = {}
 
 optparse = OptionParser.new do |opts|
