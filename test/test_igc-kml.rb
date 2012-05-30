@@ -7,9 +7,9 @@ class IGCConverterTest < Test::Unit::TestCase
     assert_raise LoadError do 
       Converter.new "data/foo.kml"
     end
-    assert_raise IOError do 
-      Converter.new "data"
-    end
+    # assert_raise IOError do 
+    #   Converter.new "data"
+    # end
     assert_raise IOError do 
       Converter.new "data/foo.igc"
     end

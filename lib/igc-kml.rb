@@ -104,9 +104,9 @@ class Converter
      begin
        file = File.new(path, "r")
      rescue Errno::EISDIR => e
-       raise IOError e.message
+       raise IOError, e.message
      rescue Errno::ENOENT => e
-       raise IOError e.message
+       raise IOError, e.message
      end
      
      @igc = file.read
