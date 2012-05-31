@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'builder'
+gem 'builder', '~> 3.0.0'
 gem 'rake'
