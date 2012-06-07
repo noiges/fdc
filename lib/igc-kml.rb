@@ -55,12 +55,13 @@ class Converter
   # 
   # @raise [LoadError] If the file has an incompatible extension
   # @raise [IOError] If the supplied path is a directory
-  def initialize(path, clamp=false, extrude=false, gps=false)
+  def initialize(path, clamp=false, extrude=false, gps=false, encoding="ISO-8859-1")
 
     @path = Pathname.new(path)
     @clamp = clamp
     @extrude = extrude
     @gps = gps
+    @encoding = encoding
 
     if @path.directory?
       raise IOError, "Not a file but directory - " << @path.to_s
@@ -102,7 +103,7 @@ class Converter
 
      # Load file
      begin
-       file = File.new(path, "r:ISO-8859-1")
+       file = File.new(path, "r", :encoding => @encoding)
      rescue Errno::EISDIR => e
        raise IOError, e.message
      rescue Errno::ENOENT => e

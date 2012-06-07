@@ -46,6 +46,12 @@ optparse = OptionParser.new do |opts|
     options[:gps] = true
   end
   
+  # UTF-8 input file encoding
+  options[:utf] = "ISO-8859-1"
+  opts.on( '-u', '--utf8', 'Use UTF-8 as input file encoding') do
+    options[:utf] = "UTF-8"
+  end
+  
   # Define help
   opts.on_tail( '-h', '--help', 'Display this help screen' ) do
     puts opts
@@ -68,7 +74,7 @@ puts optparse if ARGV.empty?
 
 ARGV.each do |file|
   begin
-      converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps])
+      converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps], encoding=options[:utf])
   rescue IOError => e
     puts e.message
   rescue LoadError => e

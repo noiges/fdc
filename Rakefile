@@ -16,3 +16,8 @@ desc "Launch executable preloaded with this lib and required debug"
 task :debug do
   sh "ruby -rubygems -I lib -r debug bin/igc-kml"
 end
+
+desc "Build gem with current .gemspec"
+task :build do
+  sh "gem build igc-kml.gemspec"
+end
