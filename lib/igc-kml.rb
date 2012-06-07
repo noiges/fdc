@@ -80,7 +80,7 @@ class Converter
   def save_kml(dirname = @path.dirname)
     if File.directory?(dirname)
       dirname += @path.basename(@path.extname)
-      file = File.new(dirname.to_s << ".kml", "w")
+      file = File.new(dirname.to_s << ".kml", "w:UTF-8")
       file.write(@kml)
       file.close
     else
@@ -102,7 +102,7 @@ class Converter
 
      # Load file
      begin
-       file = File.new(path, "r")
+       file = File.new(path, "r:ISO-8859-1")
      rescue Errno::EISDIR => e
        raise IOError, e.message
      rescue Errno::ENOENT => e
