@@ -120,21 +120,28 @@ class Converter
   
   # Parse igc file content
   def parse_igc
-    # parse utc date
-    @date = @igc.match(REGEX_H_DTE)
     
-    # parse a records
-    @a_records = @igc.match(REGEX_A)
-    raise LoadError, 'Invalid file format - ' << @path.to_s unless @a_records
+    begin
     
-    # parse h records
-    @h_records = @igc.scan(REGEX_H)
+      # parse utc date
+      @date = @igc.match(REGEX_H_DTE)
     
-    # parse b records
-    @b_records = @igc.scan(REGEX_B)
+      # parse a records
+      @a_records = @igc.match(REGEX_A)
+      raise LoadError, 'Invalid file format - ' << @path.to_s unless @a_records
     
-    # parse l records
-    @l_records = @igc.scan(REGEX_L)
+      # parse h records
+      @h_records = @igc.scan(REGEX_H)
+    
+      # parse b records
+      @b_records = @igc.scan(REGEX_B)
+    
+      # parse l records
+      @l_records = @igc.scan(REGEX_L)
+    
+    rescue ArgumentError => e
+      raise LoadError, e.message
+    end
     
   end
 
