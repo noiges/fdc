@@ -61,8 +61,8 @@ class IGCConverterTest < Test::Unit::TestCase
     assert($?.success?, "Execution with no options fails")
     
     # Converting all sample files
-    `bin/igc-kml -d test/data/temp test/data/orig/*`
-    assert($?.success?)
+    res = `bin/igc-kml -d test/data/temp test/data/orig/*`
+    assert($?.success?, res)
   end
   
 end
