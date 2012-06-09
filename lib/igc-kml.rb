@@ -52,6 +52,7 @@ class Converter
   # @param [Boolean] extrude Whether the track should be extruded to the
   #   ground
   # @param [Boolean] gps Whether GPS altitude information should be used
+  # @param [String] encodding The encoding of the input file
   # 
   # @raise [LoadError] If the file has an incompatible extension
   # @raise [IOError] If the supplied path is a directory

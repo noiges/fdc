@@ -62,7 +62,7 @@ If you don't know where this file is, or how to edit it, simply execute the foll
 
 	% echo "alias skytraxx=\"rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; find ~/Flights -type f -name \*.igc | xargs igc-kml\"" >> ~/.bashrc
 
-#### ZSH
+#### Zsh
 If your are using a shell that supports recursive globbing (e.g. zsh or fish) the alias can be further simplified to:
 	
 	alias skytraxx="rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; igc-kml ~/Flights/**/*.igc"
