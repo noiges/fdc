@@ -1,5 +1,19 @@
 # igc-kml [![Build Status](https://secure.travis-ci.org/nokinen/igc-kml.png)](http://travis-ci.org/nokinen/igc-kml) [![Dependency Status](https://gemnasium.com/nokinen/igc-kml.png)](https://gemnasium.com/nokinen/igc-kml)
-A command-line tool written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (.igc) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (.kml) for their display in Applications such as [Google Earth](earth.google.com).
+A command-line tool written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in Applications such as [Google Earth](earth.google.com). Right now, only the most important record types commonly utilized by paragliding FR are touched during conversion:
+* A record (FR manufacturer and identification)
+* H record (File header)
+ * PLT - Pilot
+ * CID - Competition ID
+ * GTY - Glider Type
+ * GID - GLider ID
+ * CCL - Competition Class
+ * SIT - Site
+ * DTE - Date
+* B record (Fix)
+* L record (Logbook/comments)
+ * Only those produced by Skytraxx 2.0 devices
+
+Note that an automatic conversion of all available H and L records in a IGC file was abandoned for the sake of output readability. However, the predifined formatting can easily be extended and changed if neccessary.
 
 ## Requirements
 
