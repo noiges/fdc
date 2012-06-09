@@ -1,6 +1,7 @@
 require 'date'
 require 'pathname'
 require 'builder'
+require 'igc-kml/exceptions'
 
 # Module with helper functions for geocoordinate conversion
 module Location
@@ -54,8 +55,8 @@ class Converter
   # @param [Boolean] gps Whether GPS altitude information should be used
   # @param [String] encodding The encoding of the input file
   # 
-  # @raise [LoadError] If the file has an incompatible extension
-  # @raise [IOError] If the supplied path is a directory
+  # @raise [FileLoadingError] If the input file is not existent, a directory, 
+  #   has the wrong extension or an invalid file format
   def initialize(path, clamp=false, extrude=false, gps=false, encoding="ISO-8859-1")
 
     @path = Pathname.new(path)
@@ -64,13 +65,8 @@ class Converter
     @gps = gps
     @encoding = encoding
 
-    if @path.directory?
-      raise IOError, "Not a file but directory - " << @path.to_s
-    elsif @path.extname == ".igc"
-      load_igc(@path)
-    else
-      raise LoadError, "Cannot read files of that type - " << @path.to_s
-    end
+    load_igc(@path)
+
   end
   
   # Write the KML document to disk.
@@ -78,16 +74,27 @@ class Converter
   # @param [Pathname] dirname The alternative output directory. If nothing is
   #   supplied the files are written to the same location as the IGC input
   #   file.
-  # @raise [IOError] if dirname is not a directory
-  def save_kml(dirname = @path.dirname)
-    if File.directory?(dirname)
-      dirname += @path.basename(@path.extname)
-      file = File.new(dirname.to_s << ".kml", "w:UTF-8")
+  # @raise [IgcKml::FileWritingError] If dirname is not a directory or write protected
+  def save_kml(dirname = @path.dirname.to_s)
+      
+      # Create Pathname for easier handling
+      dest = Pathname.new(dirname)
+      
+      # Create output file name
+      dest += @path.basename(@path.extname)
+      
+      begin
+        file = File.new(dest.to_s << ".kml", "w:UTF-8")
+      rescue Errno::EACCES => e
+        raise IgcKml::FileWritingError, "Destination is write-protected: " << dirname.to_s
+      rescue Errno::ENOTDIR => e
+        raise IgcKml::FileWritingError, "Destination is not a directory: "  << dirname.to_s
+      rescue Errno::ENOENT => e
+        raise IgcKml::FileWritingError, "Destination does not exist: " << dirname.to_s
+      end
+      
       file.write(@kml)
       file.close
-    else
-      raise IOError, "Destination is not a directory - " << dirname
-    end
   end
   
   private
@@ -102,20 +109,22 @@ class Converter
   # Load igc file from supplied path
   def load_igc(path)
 
-     # Load file
-     begin
-       file = File.new(path, "r", :encoding => @encoding)
-     rescue Errno::EISDIR => e
-       raise IOError, e.message
-     rescue Errno::ENOENT => e
-       raise IOError, e.message
-     end
-     
-     @igc = file.read
-     file.close
+    raise IgcKml::FileLoadingError, "Invalid file extension: " << @path.to_s unless @path.extname == ".igc"
 
-     parse_igc
-     build_kml
+    # Load file
+    begin
+     file = File.new(path, "r", :encoding => @encoding)
+    rescue Errno::EISDIR => e
+     raise IgcKml::FileLoadingError, "Input file is a directory: " << path.to_s
+    rescue Errno::ENOENT => e
+     raise IgcKml::FileLoadingError, "Input file does not exist: " << path.to_s
+    end
+
+    @igc = file.read
+    file.close
+
+    parse_igc
+    build_kml
 
    end
   
@@ -129,7 +138,7 @@ class Converter
     
       # parse a records
       @a_records = @igc.match(REGEX_A)
-      raise LoadError, 'Invalid file format - ' << @path.to_s unless @a_records
+      raise IgcKml::FileFormatError, 'Invalid file format: ' << @path.to_s unless @a_records
     
       # parse h records
       @h_records = @igc.scan(REGEX_H)
@@ -141,7 +150,7 @@ class Converter
       @l_records = @igc.scan(REGEX_L)
     
     rescue ArgumentError => e
-      raise LoadError, e.message
+      raise IgcKml::FileFormatError, "Wrong file encoding: " << e.message
     end
     
   end

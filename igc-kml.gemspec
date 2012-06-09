@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'igc-kml'
-  s.version     = '0.0.9'
+  s.version     = '0.0.10'
   s.date        = '2012-07-09'
   s.summary     = "Convert .igc files to .kml"
   s.description = "Convert files in the avionics flight recorder data format (.igc) to keyhole markup language files (.kml) that can be displayed in Google Earth."
