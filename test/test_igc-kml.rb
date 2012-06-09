@@ -3,6 +3,10 @@ require 'igc-kml'
 
 class IGCConverterTest < Test::Unit::TestCase
   
+  def setup
+    `chmod -w test/data/orig`
+  end
+  
   def test_errors
     # FileLoadingError: Invalid file extension (File does not end with .igc)
     assert_raise(IgcKml::FileLoadingError) { Converter.new("test/data/orig/flytec.jpg") }
