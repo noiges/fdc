@@ -5,8 +5,7 @@ require 'optparse'
 
 ERROR_MISSING_ARGUMENT = -1
 ERROR_INVALID_OPTION = -2
-ERROR_DEST_NOT_A_DIRECTORY = -3
-ERROR_WRITE_PERMISSION = -4
+ERROR_FILE_WRITE = -3
 
 options = {}
 
@@ -75,9 +74,7 @@ puts optparse if ARGV.empty?
 ARGV.each do |file|
   begin
       converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps], encoding=options[:utf])
-  rescue IOError => e
-    puts e.message
-  rescue LoadError => e
+  rescue IgcKml::FileLoadingError => e
     puts e.message
   end
   
@@ -85,13 +82,10 @@ ARGV.each do |file|
     STDOUT.puts converter.kml
   elsif converter
     begin
-      options[:dest] ? converter.save_kml(Pathname.new(options[:dest])) : converter.save_kml
-    rescue IOError => e
+      options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+    rescue IgcKml::FileWritingError => e
       puts e.message
-      exit(ERROR_DEST_NOT_A_DIRECTORY)
-    rescue Errno::EACCES => e
-      puts e.message
-      exit(ERROR_WRITE_PERMISSION)
+      exit(ERROR_FILE_WRITE)
     end
   end
 end
