@@ -4,7 +4,19 @@ require 'igc-kml'
 class IGCConverterTest < Test::Unit::TestCase
   
   def setup
+    # Remove writing permission from orig/ directory
     `chmod -w test/data/orig`
+    
+    # Create temp/ output directory
+    `mkdir test/data/temp`
+  end
+  
+  def teardown
+    # Reset writing permission for orig/ directory
+    `chmod +w test/data/orig`
+    
+    # Clean temp/ directory
+    `rm -rf test/data/temp`
   end
   
   def test_errors
