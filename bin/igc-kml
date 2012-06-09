@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'igc-kml'
 require 'optparse'
 
 ERROR_MISSING_ARGUMENT = -1
