@@ -1,5 +1,5 @@
 # igc-kml [![Build Status](https://secure.travis-ci.org/nokinen/igc-kml.png)](http://travis-ci.org/nokinen/igc-kml) [![Dependency Status](https://gemnasium.com/nokinen/igc-kml.png)](https://gemnasium.com/nokinen/igc-kml)
-A command-line tool written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in Applications such as [Google Earth](earth.google.com). Right now, only the most important record types commonly utilized by paragliding FR are touched during conversion:
+A platform independent Ruby command-line tool for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in Applications such as [Google Earth](earth.google.com). Right now, only the most important record types commonly utilized by paragliding FR are touched during conversion:
 * A record (FR manufacturer and identification)
 * H record (File header)
  * PLT - Pilot
@@ -15,9 +15,9 @@ A command-line tool written in Ruby for converting files in the avionics [flight
 
 Note that an automatic conversion of all available H and L records in a IGC file was abandoned for the sake of output readability. However, the predifined formatting can easily be extended and changed if neccessary.
 
-## Requirements
+## System requirements
 
-* Ruby 1.9.3 (get it from [ruby-lang.org](http://www.ruby-lang.org/en/downloads/))
+* Any OS (Windows, Linux, Mac OS X) with Ruby 1.9.3 installed (get it from [ruby-lang.org](http://www.ruby-lang.org/en/downloads/))
 
 ## Install
 ### The easy way
