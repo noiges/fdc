@@ -6,18 +6,22 @@ A command-line tool written in Ruby for converting files in the avionics [flight
 * Ruby 1.9.3 (get it from [ruby-lang.org](http://www.ruby-lang.org/en/downloads/))
 
 ## Install
-### From RubyGems.org
-This is the primary, convenient way to install the latest version of this tool. From your console (e.g. Terminal.app on Mac OS X, or CMD.exe on Windows), enter the following:
+### The easy way
+From your console (e.g. Terminal.app on Mac OS X or CMD.exe on Windows), enter the following:
 	
 	% gem install igc-kml
+	
+This is the primary and most convenient way to install the latest version of `igc-kml` through the `gem` utility that installs the latest version from [Rubygems.org](http://rubygems.org).
 
-### From source
-If your are a developer and want to install from source, follow these steps:
+### The hard way
+If your are a developer and want to install from source, open your console and enter the following:
 
-1. Clone this repository: `git clone git@github.com:nokinen/igc-kml.git`
-2. `cd igc-kml` 
-3. Build: `gem build igc-kml.gemspec`
-4. Install locally: `gem install igc-kml-X-X-X.gem`
+	% git clone git@github.com:nokinen/igc-kml.git
+	% cd igc-kml
+	% gem build igc-kml.gemspec
+	% gem install igc-kml-X-X-X.gem
+	
+By doing so, you are cloning this repository to the current working directory of your shell session, build igc-kml via its .gemspec file, and install the built gem on your system.
 
 ## Usage
 	
@@ -28,3 +32,20 @@ Convert one or more .igc files to .kml:
 See help:
 
 	% igc-kml -h
+	
+## Advanced usage
+### Skytraxx synchronization
+On Unix-like systems, `igc-kml` and `rsync` can be used to setup aliases to conveniently synchronize your [Skytraxx 2.0](http://flugvario.de) device with your computer.
+#### Bash
+If you are using bash (the default shell on most Linux systems as well as Mac OS X), add the following line to your `.bashrc` file:
+
+	alias skytraxx="rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; find ~/Flights -type f -name \*.igc | xargs igc-kml"
+	
+If you don't know where this file is, or how to edit it, simply execute the following command:
+
+	% echo "alias skytraxx=\"rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; find ~/Flights -type f -name \*.igc | xargs igc-kml\"" >> ~/.bashrc
+
+#### ZSH
+With the ZSH shell on a Unix system, the `FLIGHTS` directory and the containing IGC files of  can be automatically synced and converted to KML by adding the following alias to your `.zshrc` file (assuming that your flights are stored in `~/Flights`, and the name of Skytraxx's volume is `SKYTRAXX`):
+
+    alias skytraxx="rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; igc-kml ~/Flights/**/*.igc"
