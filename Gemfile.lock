@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    igc-kml (0.0.10)
+    igc-kml (0.0.11)
       builder (~> 3.0.0)
       rake (~> 0.9.2)
 
