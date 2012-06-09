@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "Convert files in the avionics flight recorder data format (.igc) to keyhole markup language files (.kml) that can be displayed in Google Earth."
   s.authors     = ["Tobias Noiges"]
   s.email       = 'tobias@noig.es'
-  s.files       = ["lib/igc-kml.rb"]
+  s.files       = Dir['lib/**/*.rb']
   s.homepage    = 'https://github.com/nokinen/igc-kml'
   s.add_runtime_dependency "builder", '~> 3.0.0'
   s.add_runtime_dependency "rake", '~> 0.9.2'
