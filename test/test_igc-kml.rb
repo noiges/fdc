@@ -51,30 +51,30 @@ class IGCConverterTest < Test::Unit::TestCase
   def test_cli
     
     # Missing argument exit status
-    `bin/igc-kml -d`
-    assert_equal(255, $?.exitstatus)
+    stdout = `bin/igc-kml -d`
+    assert_equal(255, $?.exitstatus, stdout)
     
     # Invalid option exit status
-    `bin/igc-kml -p`
-    assert_equal(254, $?.exitstatus)
+    stdout = `bin/igc-kml -p`
+    assert_equal(254, $?.exitstatus, stdout)
     
     # File write exit status
-    `bin/igc-kml test/data/orig/skytraxx.igc`
-    assert_equal(253, $?.exitstatus)
+    stdout = `bin/igc-kml test/data/orig/skytraxx.igc`
+    assert_equal(253, $?.exitstatus, stdout)
     
-    `bin/igc-kml -d test/data/foo test/data/orig/skytraxx.igc`
-    assert_equal(253, $?.exitstatus)
+    stdout = `bin/igc-kml -d test/data/foo test/data/orig/skytraxx.igc`
+    assert_equal(253, $?.exitstatus, stdout)
 
-    `bin/igc-kml -d test/data/orig/flytec.igc test/data/orig/skytraxx.igc`
-    assert_equal(253, $?.exitstatus)
+    stdout = `bin/igc-kml -d test/data/orig/flytec.igc test/data/orig/skytraxx.igc`
+    assert_equal(253, $?.exitstatus, stdout)
     
     # No options
     `bin/igc-kml`
     assert($?.success?, "Execution with no options fails")
     
     # Converting all sample files
-    res = `bin/igc-kml -d test/data/temp test/data/orig/*`
-    assert($?.success?, res)
+    stdout = `bin/igc-kml -d test/data/temp test/data/orig/*`
+    assert($?.success?, stdout)
   end
   
 end
