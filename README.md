@@ -35,7 +35,10 @@ See help:
 	
 ## Advanced usage
 ### Skytraxx synchronization
-On Unix-like systems, `igc-kml` and `rsync` can be used to setup aliases to conveniently synchronize your [Skytraxx 2.0](http://flugvario.de) device with your computer.
+On Unix-like systems, `igc-kml` and `rsync` can be used to setup aliases to conveniently synchronize your [Skytraxx 2.0](http://flugvario.de) device with your computer. 
+
+The following instructions assume that the volume of your Skytraxx device is called `SKYTRAXX`, and that you sync `SKYTRAXX/FLIGHTS/` to `~/Flights`on your computer.
+
 #### Bash
 If you are using bash (the default shell on most Linux systems as well as Mac OS X), add the following line to your `.bashrc` file:
 
@@ -46,6 +49,11 @@ If you don't know where this file is, or how to edit it, simply execute the foll
 	% echo "alias skytraxx=\"rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; find ~/Flights -type f -name \*.igc | xargs igc-kml\"" >> ~/.bashrc
 
 #### ZSH
-With the ZSH shell on a Unix system, the `FLIGHTS` directory and the containing IGC files of  can be automatically synced and converted to KML by adding the following alias to your `.zshrc` file (assuming that your flights are stored in `~/Flights`, and the name of Skytraxx's volume is `SKYTRAXX`):
+If your are using a shell that supports recursive globbing (e.g. zsh or fish) the alias can be further simplified to:
+	
+	alias skytraxx="rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; igc-kml ~/Flights/**/*.igc"
 
-    alias skytraxx="rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; igc-kml ~/Flights/**/*.igc"
+#### Using the alias
+After you succesfully added the `skytraxx` alias to your shell, you are able to synchronize all new IGS files from a connected skytraxx device to `~/Flights` and automatically convert them to the KML format. To do so, simply executethe following from your console:
+
+	% skytraxx
