@@ -9,6 +9,6 @@ Gem::Specification.new do |s|
   s.files       = Dir['lib/**/*.rb']
   s.homepage    = 'https://github.com/nokinen/igc-kml'
   s.add_runtime_dependency "builder", '~> 3.0.0'
-  s.add_runtime_dependency "rake", '~> 0.9.2'
+  s.add_development_dependency "rake", '~> 0.9.2'
   s.executables << 'igc-kml'
 end
