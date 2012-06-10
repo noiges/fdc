@@ -50,10 +50,16 @@ optparse = OptionParser.new do |opts|
   opts.on( '-u', '--utf8', 'Use UTF-8 as input file encoding') do
     options[:utf] = "UTF-8"
   end
+
+  # Verbose output
+  options[:verbose] = false
+  opts.on( '-v', '--verbose', 'Cause verbose output, showing converted files after they were created.') do
+    options[:verbose] = true
+  end
   
   # Define help
   opts.on_tail( '-h', '--help', 'Display this help screen' ) do
-    puts opts
+    STDERR.puts opts
     exit
   end
 
@@ -62,14 +68,14 @@ end
 begin
   optparse.parse!
 rescue OptionParser::MissingArgument => e
-  puts e.message
+  STDERR.puts e.message
   exit(ERROR_MISSING_ARGUMENT)
 rescue OptionParser::InvalidOption => e
-  puts e.message
+  STDERR.puts e.message
   exit(ERROR_INVALID_OPTION)
 end
 
-puts optparse if ARGV.empty?
+STDERR.puts optparse if ARGV.empty?
 
 @converter = IGCConverter.new
 
@@ -78,7 +84,7 @@ ARGV.each do |file|
   begin
       @converter.parse(file, encoding=options[:utf])
   rescue IgcKml::FileLoadingError => e
-    puts e.message
+    STDERR.puts e.message
     next
   end
   
@@ -89,8 +95,9 @@ ARGV.each do |file|
   else
     begin
       options[:dest] ? @converter.export(options[:dest]) : @converter.export
+      STDERR.puts "Successfully converted IGC file: " << file if options[:verbose]
     rescue IgcKml::FileWritingError => e
-      puts e.message
+      STDERR.puts e.message
       exit(ERROR_FILE_WRITE)
     end
   end
