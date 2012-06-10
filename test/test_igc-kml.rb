@@ -7,7 +7,10 @@ class IGCConverterTest < Test::Unit::TestCase
     # Remove writing permission from orig/ directory
     `chmod -w test/data/orig`
     
-    # Create temp/ output directory
+    # Delete temp/ directory
+    `rm -rf test/data/temp`
+    
+    # Recreate temp/ output directory
     `mkdir test/data/temp`
     
     @converter = IGCConverter.new
@@ -85,7 +88,10 @@ class CLITest < Test::Unit::TestCase
     # Remove writing permission from orig/ directory
     `chmod -w test/data/orig`
     
-    # Create temp/ output directory
+    # Delete temp/ directory
+    `rm -rf test/data/temp`
+    
+    # Recreate temp/ output directory
     `mkdir test/data/temp`
     
   end
@@ -101,34 +107,44 @@ class CLITest < Test::Unit::TestCase
   def test_exit_codes
     
     # Missing argument exit status
-    stdout = `bin/igc-kml -d`
-    assert_equal(255, $?.exitstatus, stdout)
+    stderr = `bin/igc-kml -d 2>&1`
+    assert_equal(255, $?.exitstatus, stderr)
     
     # Invalid option exit status
-    stdout = `bin/igc-kml -p`
-    assert_equal(254, $?.exitstatus, stdout)
+    stderr = `bin/igc-kml -p 2>&1`
+    assert_equal(254, $?.exitstatus, stderr)
     
     # File write exit status
-    stdout = `bin/igc-kml test/data/orig/skytraxx.igc`
-    assert_equal(253, $?.exitstatus, stdout)
+    stderr = `bin/igc-kml test/data/orig/skytraxx.igc 2>&1`
+    assert_equal(253, $?.exitstatus, stderr)
     
-    stdout = `bin/igc-kml -d test/data/foo test/data/orig/skytraxx.igc`
-    assert_equal(253, $?.exitstatus, stdout)
+    stderr = `bin/igc-kml -d test/data/foo test/data/orig/skytraxx.igc 2>&1`
+    assert_equal(253, $?.exitstatus, stderr)
 
-    stdout = `bin/igc-kml -d test/data/orig/flytec.igc test/data/orig/skytraxx.igc`
-    assert_equal(253, $?.exitstatus, stdout)
+    stderr = `bin/igc-kml -d test/data/orig/flytec.igc test/data/orig/skytraxx.igc 2>&1`
+    assert_equal(253, $?.exitstatus, stderr)
     
     # No options
-    `bin/igc-kml`
+    `bin/igc-kml 2>&1`
     assert($?.success?, "Execution with no options fails")
     
     # Converting all sample files
-    stdout = `bin/igc-kml -d test/data/temp test/data/orig/*`
-    assert($?.success?, stdout)
+    stderr = `bin/igc-kml -d test/data/temp test/data/orig/* 2>&1`
+    assert($?.success?, stderr)
     
     # Try to convert all files in directory that has no IGC files
-    stdout = `bin/igc-kml test/data/temp/*`
-    assert($?.success?, stdout)
+    stderr = `bin/igc-kml test/data/temp/* 2>&1`
+    assert($?.success?, stderr)
+  end
+  
+  def test_options
+    
+    # Verbose output
+    stderr = `bin/igc-kml -d test/data/temp test/data/orig/skytraxx.igc 2>&1`
+    assert(!stderr.include?("test/data/orig/skytraxx.igc"), stderr)
+    stderr = `bin/igc-kml -v -d test/data/temp test/data/orig/skytraxx.igc 2>&1`
+    assert(stderr.include?("test/data/orig/skytraxx.igc"), stderr)
+    
   end
   
 end
