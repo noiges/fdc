@@ -145,6 +145,20 @@ class CLITest < Test::Unit::TestCase
     stderr = `bin/igc-kml -v -d test/data/temp test/data/orig/skytraxx.igc 2>&1`
     assert(stderr.include?("test/data/orig/skytraxx.igc"), stderr)
     
+    # Output to STDOUT
+    stdout = `bin/igc-kml -s test/data/orig/skytraxx.igc`
+    assert(stdout.include?("</kml>"), "STDOUT does not contain kml tag")
+    
+    # Clamp
+    assert(stdout.include?("<altitudeMode>absolute</altitudeMode>"), "altitudeMode should be absolute")
+    stdout = `bin/igc-kml -s -c test/data/orig/skytraxx.igc`
+    assert(stdout.include?("<altitudeMode>clampToGround</altitudeMode>"), "altitudeMode should be clampToGround")
+    
+    # Extrude
+    assert(stdout.include?("<extrude>0</extrude>"), "Extrude should be 0")
+    stdout = `bin/igc-kml -s -e test/data/orig/skytraxx.igc`
+    assert(stdout.include?("<extrude>1</extrude>"), "Extrude should be 1")
+    
   end
   
 end
