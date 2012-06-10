@@ -6,6 +6,14 @@ require 'optparse'
 ERROR_MISSING_ARGUMENT = -1
 ERROR_INVALID_OPTION = -2
 ERROR_FILE_WRITE = -3
+ERROR_INCOMPATIBLE_RUBY_VERSION = -4
+
+# Lock out older and knowingly incompatible ruby versions
+if RUBY_VERSION[0..2].to_f < 1.9 then 
+  STDERR.puts "Incompatible Ruby version: " << RUBY_VERSION << " (at least 1.9.1 required)"
+  STDERR.puts "Get the latest version from ruby-lang.org!"
+  exit(ERROR_INCOMPATIBLE_RUBY_VERSION)
+end
 
 options = {}
 
