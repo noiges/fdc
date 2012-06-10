@@ -3,7 +3,6 @@ PATH
   specs:
     igc-kml (0.1.0)
       builder (~> 3.0.0)
-      rake (~> 0.9.2)
 
 GEM
   remote: http://rubygems.org/
@@ -16,3 +15,4 @@ PLATFORMS
 
 DEPENDENCIES
   igc-kml!
+  rake (~> 0.9.2)
