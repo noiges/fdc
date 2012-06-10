@@ -9,6 +9,8 @@ class IGCConverterTest < Test::Unit::TestCase
     
     # Create temp/ output directory
     `mkdir test/data/temp`
+    
+    @converter = IGCConverter.new
   end
   
   def teardown
@@ -20,25 +22,52 @@ class IGCConverterTest < Test::Unit::TestCase
   end
   
   def test_errors
+    
+    # RuntimeError: compile and export called before load
+    assert_raise RuntimeError do
+      @converter.compile
+    end
+    assert_raise RuntimeError do
+      @converter.export
+    end
+    
     # FileLoadingError: Invalid file extension (File does not end with .igc)
-    assert_raise(IgcKml::FileLoadingError) { Converter.new("test/data/orig/flytec.jpg") }
+    assert_raise IgcKml::FileLoadingError do
+      @converter.parse "test/data/orig/flytec.jpg"
+    end
     
     # FileLoadingError: Input file is a directory
-    assert_raise(IgcKml::FileLoadingError) { Converter.new("test/data/") }
+    assert_raise IgcKml::FileLoadingError do 
+      @converter.parse "test/data/"
+    end
     
     # FileLoadingError: Input file does not exist
-    assert_raise(IgcKml::FileLoadingError) { Converter.new("test/data/foo.igc") }
+    assert_raise IgcKml::FileLoadingError do
+       @converter.parse "test/data/foo.igc"
+    end
     
     # FileFormatError: Invalid file format (No A record can be found)
-    assert_raise(IgcKml::FileFormatError) { Converter.new("test/data/test_no_a_record.igc") }
+    assert_raise IgcKml::FileFormatError do
+      @converter.parse "test/data/test_no_a_record.igc"
+    end
     
-    converter = Converter.new("test/data/orig/flytec.igc")
+    @converter.parse "test/data/orig/flytec.igc"
+    @converter.compile
+    
     # FileWritingError: Destination does not exist
-    assert_raise IgcKml::FileWritingError do converter.save_kml "test/data/foo" end
+    assert_raise IgcKml::FileWritingError do
+      @converter.export "test/data/foo"
+    end
+    
     # FileWritingError: Destination is not a directory
-    assert_raise IgcKml::FileWritingError do converter.save_kml "test/data/flytec.igc" end
+    assert_raise IgcKml::FileWritingError do 
+      @converter.export "test/data/flytec.igc"
+    end
+    
     # FileWritingError: Destination is write protected
-    assert_raise IgcKml::FileWritingError do converter.save_kml "test/data/orig" end
+    assert_raise IgcKml::FileWritingError do 
+      @converter.export "test/data/orig"
+    end
       
     # TODO FileFormatError: Wrong file encoding
     
@@ -74,6 +103,10 @@ class IGCConverterTest < Test::Unit::TestCase
     
     # Converting all sample files
     stdout = `bin/igc-kml -d test/data/temp test/data/orig/*`
+    assert($?.success?, stdout)
+    
+    # Try to convert all files in directory that has no IGC files
+    stdout = `bin/igc-kml test/data/temp/*`
     assert($?.success?, stdout)
   end
   

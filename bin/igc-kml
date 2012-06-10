@@ -71,18 +71,24 @@ end
 
 puts optparse if ARGV.empty?
 
+@converter = IGCConverter.new
+
 ARGV.each do |file|
+  
   begin
-      converter = Converter.new(file, clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps], encoding=options[:utf])
+      @converter.parse(file, encoding=options[:utf])
   rescue IgcKml::FileLoadingError => e
     puts e.message
+    next
   end
   
+  @converter.compile(clamp=options[:clamp], extrude=options[:extrude], gps=options[:gps])
+  
   if options[:stdout] 
-    STDOUT.puts converter.kml
-  elsif converter
+    STDOUT.puts @converter.kml
+  else
     begin
-      options[:dest] ? converter.save_kml(options[:dest]) : converter.save_kml
+      options[:dest] ? @converter.export(options[:dest]) : @converter.export
     rescue IgcKml::FileWritingError => e
       puts e.message
       exit(ERROR_FILE_WRITE)
