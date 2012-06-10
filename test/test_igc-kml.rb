@@ -24,7 +24,7 @@ class IGCConverterTest < Test::Unit::TestCase
     `rm -rf test/data/temp`
   end
   
-  def test_errors
+  def test_io
     
     # RuntimeError: compile and export called before load
     assert_raise RuntimeError do
@@ -49,11 +49,6 @@ class IGCConverterTest < Test::Unit::TestCase
        @converter.parse "test/data/foo.igc"
     end
     
-    # FileFormatError: Invalid file format (No A record can be found)
-    assert_raise IgcKml::FileFormatError do
-      @converter.parse "test/data/test_no_a_record.igc"
-    end
-    
     @converter.parse "test/data/orig/flytec.igc"
     @converter.compile
     
@@ -76,8 +71,42 @@ class IGCConverterTest < Test::Unit::TestCase
     
   end
   
-  def test_parsing
-    # TODO Implement
+  def test_parse_and_compile
+    
+    # No A record
+    assert_raise IgcKml::FileFormatError do
+      @converter.parse "test/data/mod/no_a_record.igc"
+      @converter.compile
+    end
+    
+    # No B records
+    assert_nothing_raised do
+      @converter.parse "test/data/mod/no_b_records.igc"
+      @converter.compile
+    end
+    
+    # No H records and therefore no date
+    assert_raise IgcKml::FileFormatError do
+      @converter.parse "test/data/mod/no_h_records.igc"
+    end
+    
+    # No date must cause RuntimeError if compile is called
+    assert_raise RuntimeError do
+      @converter.compile
+    end
+    
+    # No L records
+    assert_nothing_raised do
+      @converter.parse "test/data/mod/no_l_records.igc"
+      @converter.compile
+    end
+    
+    # Corrupt B records
+    assert_nothing_raised do
+      @converter.parse "test/data/mod/corrupt_b_records.igc"
+      @converter.compile
+    end
+    
   end
   
 end

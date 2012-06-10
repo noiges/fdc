@@ -45,7 +45,7 @@ class IGCConverter
   def compile(clamp=false, extrude=false, gps=false)
     
     # State assertion
-    raise RuntimeError, "Cannot compile before parse" if @igc.nil?
+    raise RuntimeError, "Cannot compile before successfull parse" if @igc.nil? || @date.nil?
     
     # Build HTML for balloon description
     html = Builder::XmlMarkup.new(:indent => 2)
@@ -90,6 +90,7 @@ class IGCConverter
             html.br
           end
         end
+        
         html.strong "Date:"
         html.dfn @date[3..5].join(".")
         html.br
@@ -98,26 +99,29 @@ class IGCConverter
       # Manufacturer-dependent L records
       case @a_records[1]
       when "XSX"
-        html.p do 
-          @l_records[0][1].split(";").each do |value|
-            key_val = value.split(":")
-            case key_val[0]
-            when "MC"
-              html.strong "Max. climb:"
-              html.dfn key_val[1].strip << " m/s"
-              html.br
-            when "MS"
-              html.strong "Max. sink:"
-              html.dfn key_val[1].strip << " m/s"
-              html.br
-            when "MSP"
-              html.strong "Max. speed:"
-              html.dfn key_val[1].strip << " km/h"
-              html.br
-            when "Dist"
-              html.strong "Track distance:"
-              html.dfn key_val[1].strip << " km"
-              html.br
+        @l_records.each do |l|
+          if matches = l[1].scan(/(\w*):(-?\d+.?\d+)/) then 
+            html.p do
+              matches.each do |match|
+                case match[0]
+                when "MC"
+                  html.strong "Max. climb:"
+                  html.dfn match[1] << " m/s"
+                  html.br
+                when "MS"
+                  html.strong "Max. sink:"
+                  html.dfn match[1] << " m/s"
+                  html.br
+                when "MSP"
+                  html.strong "Max. speed:"
+                  html.dfn match[1] << " km/h"
+                  html.br
+                when "Dist"
+                  html.strong "Track distance:"
+                  html.dfn match[1] << " km"
+                  html.br
+                end
+              end
             end
           end
         end
@@ -240,6 +244,7 @@ class IGCConverter
     
       # parse utc date
       @date = @igc.match(REGEX_H_DTE)
+      raise IgcKml::FileFormatError, 'Invalid file format - header date is missing: ' << @path.to_s unless @date
     
       # parse a records
       @a_records = @igc.match(REGEX_A)
@@ -262,13 +267,13 @@ class IGCConverter
   
   # Generate Snippet tag content
   def snippet
-    summary = "Flight from "
+    summary = "Flight"
     @h_records.each do |h|
       if h.include?("SIT") && !h[2].strip.empty? then 
-        summary << h[2].strip << " on " 
+        summary << " from " << h[2].strip 
       end
     end
-    summary << @date[3..5].join(".")
+    summary << " on " << @date[3..5].join(".")
   end
   
 end
