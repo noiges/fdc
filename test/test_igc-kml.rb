@@ -54,6 +54,8 @@ class CLITest < Test::Unit::TestCase
     # Try to convert all files in directory that has no IGC files
     stderr = `bin/igc-kml test/data/temp/* 2>&1`
     assert($?.success?, stderr)
+    
+    # TODO Incompatible ruby version
   end
   
   def test_options
