@@ -1,7 +1,7 @@
 # igc-kml [![Build Status](https://secure.travis-ci.org/nokinen/igc-kml.png)](http://travis-ci.org/nokinen/igc-kml) [![Dependency Status](https://gemnasium.com/nokinen/igc-kml.png)](https://gemnasium.com/nokinen/igc-kml)
-A platform independent command-line utility written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in Applications such as [Google Earth](earth.google.com).
 
 ## About
+igc-kml is a platform independent command-line utility written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in Applications such as [Google Earth](earth.google.com).
 ### Utilized IGC record types
 Right now, only the most important record types commonly utilized by paragliding FR are touched during conversion:
 * A record (FR manufacturer and identification)
@@ -32,7 +32,7 @@ From your console (e.g. Terminal.app on Mac OS X or CMD.exe on Windows), enter t
 	
 	% gem install igc-kml
 	
-This is the primary and most convenient way to install the latest version of `igc-kml` through the `gem` utility that installs the latest version from [Rubygems.org](http://rubygems.org).
+This is the primary and most convenient way to install the latest version of `igc-kml` through the `gem` utility that pulls the latest version from [Rubygems.org](http://rubygems.org).
 
 ### The hard way
 If you are a developer and want to install from source, open your console and enter the following:
