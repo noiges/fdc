@@ -1,4 +1,4 @@
-# FDC - The flight data converter
+# FDC - The flight recorder data converter
 [![Build Status](https://secure.travis-ci.org/nokinen/igc-kml.png)](http://travis-ci.org/nokinen/igc-kml) [![Dependency Status](https://gemnasium.com/nokinen/igc-kml.png)](https://gemnasium.com/nokinen/igc-kml)
 
 ## About
