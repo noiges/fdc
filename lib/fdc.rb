@@ -1,4 +1,4 @@
-# Ruby stdlib
+# Ruby core and stdlib
 require 'date'
 require 'pathname'
 

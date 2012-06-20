@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fdc (0.0.1)
+    fdc (0.0.2)
       builder (~> 3.0.0)
 
 GEM
