@@ -183,12 +183,12 @@ module Fdc
     #   as the IGC input file.
     # @raise [RuntimeError] If {#parse} and {#compile} were not called before
     # @raise [Fdc::FileWritingError] If dirname is not a directory or write protected
-    def export(dir = "")
+    def export(dir = nil)
     
       # Assert state
-      raise RuntimeError, "Cannot export before compile was called" if @kml.nil?
+      raise RuntimeError, "Cannot export before compile was called" unless @kml
     
-      dir = @path.dirname.to_s if dir.empty?
+      dir = @path.dirname.to_s unless dir
     
       # Create Pathname for easier handling
       dest = Pathname.new(dir)
