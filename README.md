@@ -1,4 +1,5 @@
-# FDC - The flight data converter [![Build Status](https://secure.travis-ci.org/nokinen/igc-kml.png)](http://travis-ci.org/nokinen/igc-kml) [![Dependency Status](https://gemnasium.com/nokinen/igc-kml.png)](https://gemnasium.com/nokinen/igc-kml)
+# FDC - The flight data converter
+[![Build Status](https://secure.travis-ci.org/nokinen/igc-kml.png)](http://travis-ci.org/nokinen/igc-kml) [![Dependency Status](https://gemnasium.com/nokinen/igc-kml.png)](https://gemnasium.com/nokinen/igc-kml)
 
 ## About
 `fdc` is a platform independent command-line utility written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in Applications such as [Google Earth](earth.google.com).
