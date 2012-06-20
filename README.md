@@ -38,8 +38,8 @@ This is the primary and most convenient way to install the latest version of `fd
 ### The hard way
 If you are a developer and want to install from source, open your console and enter the following:
 
-	% git clone git@github.com:nokinen/igc-kml.git
-	% cd igc-kml
+	% git clone git@github.com:nokinen/fdc.git
+	% cd fdc
 	% gem build fdc.gemspec
 	% gem install fdc-X-X-X.gem
 	
