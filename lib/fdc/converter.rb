@@ -199,11 +199,11 @@ module Fdc
       begin
         file = File.new(dest.to_s << ".kml", "w:UTF-8")
       rescue Errno::EACCES => e
-        raise Fdc::FileWritingError, "Destination is write-protected: " << dir.to_s
+        raise Fdc::FileWritingError, "Destination is write-protected: #{dir.to_s}"
       rescue Errno::ENOTDIR => e
-        raise Fdc::FileWritingError, "Destination is not a directory: "  << dir.to_s
+        raise Fdc::FileWritingError, "Destination is not a directory: #{dir.to_s}"
       rescue Errno::ENOENT => e
-        raise Fdc::FileWritingError, "Destination does not exist: " << dir.to_s
+        raise Fdc::FileWritingError, "Destination does not exist: #{dir.to_s}"
       end
     
       file.write(@kml)
@@ -216,15 +216,15 @@ module Fdc
     # Load igc file from supplied path
     def load_file
 
-      raise Fdc::FileLoadingError, "Invalid file extension: " << @path.to_s unless @path.extname == ".igc"
+      raise Fdc::FileLoadingError, "Invalid file extension: #{@path.to_s}" unless @path.extname == ".igc"
 
       # Load file
       begin
        file = File.new(@path, "r", :encoding => @encoding)
       rescue Errno::EISDIR => e
-       raise Fdc::FileLoadingError, "Input file is a directory: " << @path.to_s
+       raise Fdc::FileLoadingError, "Input file is a directory: #{@path.to_s}"
       rescue Errno::ENOENT => e
-       raise Fdc::FileLoadingError, "Input file does not exist: " << @path.to_s
+       raise Fdc::FileLoadingError, "Input file does not exist: #{@path.to_s}"
       end
 
       @igc = file.read
@@ -246,11 +246,11 @@ module Fdc
     
         # parse utc date
         @date = @igc.match(REGEX_H_DTE)
-        raise Fdc::FileFormatError, 'Invalid file format - header date is missing: ' << @path.to_s unless @date
+        raise Fdc::FileFormatError, "Invalid file format - header date is missing: #{@path.to_s}" unless @date
     
         # parse a records
         @a_records = @igc.match(REGEX_A)
-        raise Fdc::FileFormatError, 'Invalid file format: ' << @path.to_s unless @a_records
+        raise Fdc::FileFormatError, "Invalid file format: #{@path.to_s}" unless @a_records
     
         # parse h records
         @h_records = @igc.scan(REGEX_H)
@@ -262,7 +262,7 @@ module Fdc
         @l_records = @igc.scan(REGEX_L)
     
       rescue ArgumentError => e
-        raise Fdc::FileFormatError, "Wrong file encoding: " << e.message
+        raise Fdc::FileFormatError, "Wrong file encoding: #{e.message}"
       end
     
     end
@@ -272,10 +272,10 @@ module Fdc
       summary = "Flight"
       @h_records.each do |h|
         if h.include?("SIT") && !h[2].strip.empty? then 
-          summary << " from " << h[2].strip 
+          summary << " from #{h[2].strip}" 
         end
       end
-      summary << " on " << @date[3..5].join(".")
+      summary << " on #{@date[3..5].join(".")}"
     end
   
   end

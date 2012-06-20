@@ -10,7 +10,7 @@ ERROR_INCOMPATIBLE_RUBY_VERSION = -4
 
 # Lock out older and knowingly incompatible ruby versions
 if RUBY_VERSION[0..2].to_f < 1.9 then 
-  STDERR.puts "Incompatible Ruby version: " << RUBY_VERSION << " (at least 1.9.1 required)"
+  STDERR.puts "Incompatible Ruby version: #{RUBY_VERSION} (at least 1.9.1 required)"
   STDERR.puts "Get the latest version from ruby-lang.org!"
   exit(ERROR_INCOMPATIBLE_RUBY_VERSION)
 end
@@ -25,48 +25,48 @@ optparse = OptionParser.new do |opts|
   
   # Define alternative destination directory
   options[:dest] = nil
-  opts.on( '-d', '--destination DEST', String, 'Alternative destination directory for converted KML files' ) do |dest| 
+  opts.on( "-d", "--destination DEST", String, "Alternative destination directory for converted KML files" ) do |dest| 
    options[:dest] = dest
   end
   
   # Define alternative destination directory
   options[:stdout] = false
-  opts.on( '-s', '--stdout', String, 'Print converted KML to STDOUT' ) do
+  opts.on( "-s", "--stdout", String, "Print converted KML to STDOUT" ) do
    options[:stdout] = true
   end
 
   # Clamp track to ground and ignore altitude information
   options[:clamp] = false
-  opts.on( '-c', '--clamp', 'Clamp track to ground') do
+  opts.on( "-c", "--clamp", "Clamp track to ground") do
     options[:clamp] = true
   end
   
   # Extrude track to ground to emphasize absolute height
   options[:extrude] = false
-  opts.on( '-e', '--extrude', 'Extrude track to ground') do
+  opts.on( "-e", "--extrude", "Extrude track to ground") do
     options[:extrude] = true
   end
   
   # Extrude track to ground to emphasize absolute height
   options[:gps] = false
-  opts.on( '-g', '--gps-alt', 'Use gps altitude instead of barometric altitude') do
+  opts.on( "-g", "--gps-alt", "Use gps altitude instead of barometric altitude") do
     options[:gps] = true
   end
   
   # UTF-8 input file encoding
   options[:utf] = "ISO-8859-1"
-  opts.on( '-u', '--utf8', 'Use UTF-8 as input file encoding') do
+  opts.on( "-u", "--utf8", "Use UTF-8 as input file encoding") do
     options[:utf] = "UTF-8"
   end
 
   # Verbose output
   options[:verbose] = false
-  opts.on( '-v', '--verbose', 'Cause verbose output, showing converted files after they were created.') do
+  opts.on( "-v", "--verbose", "Cause verbose output, showing converted files after they were created.") do
     options[:verbose] = true
   end
   
   # Define help
-  opts.on_tail( '-h', '--help', 'Display this help screen' ) do
+  opts.on_tail( "-h", "--help", "Display this help screen" ) do
     STDERR.puts opts
     exit
   end
@@ -103,7 +103,7 @@ ARGV.each do |file|
   else
     begin
       options[:dest] ? @converter.export(options[:dest]) : @converter.export
-      STDERR.puts "Successfully converted IGC file: " << file if options[:verbose]
+      STDERR.puts "Successfully converted IGC file: #{file}" if options[:verbose]
     rescue Fdc::FileWritingError => e
       STDERR.puts e.message
       exit(ERROR_FILE_WRITE)
