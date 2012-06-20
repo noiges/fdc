@@ -47,7 +47,7 @@ module Fdc
     def compile(clamp=false, extrude=false, gps=false)
     
       # State assertion
-      raise RuntimeError, "Cannot compile before successfull parse" if @igc.nil? || @date.nil?
+      raise RuntimeError, "Cannot compile before successfull parse" if @igc.nil? or @date.nil?
     
       # Build HTML for balloon description
       html = Builder::XmlMarkup.new(:indent => 2)
@@ -61,32 +61,32 @@ module Fdc
         end
         html.p do
           @h_records.each do |h|
-            if h.include?("PLT") && !h[2].strip.empty? then 
+            if h.include? "PLT" and not h[2].strip.empty? then 
               html.strong "Pilot:"
               html.dfn h[2].strip
               html.br
             end
-            if h.include?("CID") && !h[2].strip.empty? then 
+            if h.include? "CID" and not h[2].strip.empty? then 
               html.strong "Competition ID:"
               html.dfn h[2].strip
               html.br
             end
-            if h.include?("GTY") && !h[2].strip.empty? then 
+            if h.include? "GTY" and not h[2].strip.empty? then 
               html.strong "Glider:"
               html.dfn h[2].strip
               html.br
             end
-            if h.include?("GID") && !h[2].strip.empty? then
+            if h.include? "GID" and not h[2].strip.empty? then
               html.strong "Glider ID:"
               html.dfn h[2].strip
               html.br
             end
-            if h.include?("CCL") && !h[2].strip.empty? then 
+            if h.include? "CCL" and not h[2].strip.empty? then 
               html.strong "Competition class:"
               html.dfn h[2].strip
               html.br 
             end
-            if h.include?("SIT") && !h[2].strip.empty? then 
+            if h.include? "SIT" and not h[2].strip.empty? then 
               html.strong "Site:"
               html.dfn h[2].strip
               html.br
@@ -271,7 +271,7 @@ module Fdc
     def snippet
       summary = "Flight"
       @h_records.each do |h|
-        if h.include?("SIT") && !h[2].strip.empty? then 
+        if h.include? "SIT" and not h[2].strip.empty? then 
           summary << " from #{h[2].strip}" 
         end
       end
