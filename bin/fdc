@@ -105,7 +105,7 @@ ARGV.each do |file|
   else
     begin
       options[:dest] ? @converter.export(options[:dest]) : @converter.export
-      STDERR.puts "Successfully converted IGC file: #{file}" if options[:verbose]
+      STDERR.puts "Successfully converted file: #{file}" if options[:verbose]
     rescue Fdc::FileWriteError => e
       STDERR.puts e.message
       exit(ERROR_FILE_EXPORT)
