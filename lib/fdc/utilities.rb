@@ -29,10 +29,4 @@ module Fdc
      
    end
   
-  # Exception caused by invalid input file format
-  class FileFormatError < StandardError; end
-  # Exception that is raised when a file cannot be loaded
-  class FileLoadingError < StandardError; end
-  # Eception that is raised when a files cannot be written
-  class FileWritingError < StandardError; end
 end

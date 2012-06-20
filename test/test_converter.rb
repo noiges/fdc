@@ -34,36 +34,36 @@ class ConverterTest < Test::Unit::TestCase
       @converter.export
     end
     
-    # FileLoadingError: Invalid file extension (File does not end with .igc)
-    assert_raise Fdc::FileLoadingError do
+    # FileReadError: Invalid file extension (File does not end with .igc)
+    assert_raise Fdc::FileReadError do
       @converter.parse "test/data/orig/flytec.jpg"
     end
     
-    # FileLoadingError: Input file is a directory
-    assert_raise Fdc::FileLoadingError do 
+    # FileReadError: Input file is a directory
+    assert_raise Fdc::FileReadError do 
       @converter.parse "test/data/"
     end
     
-    # FileLoadingError: Input file does not exist
-    assert_raise Fdc::FileLoadingError do
+    # FileReadError: Input file does not exist
+    assert_raise Fdc::FileReadError do
        @converter.parse "test/data/foo.igc"
     end
     
     @converter.parse "test/data/orig/flytec.igc"
     @converter.compile
     
-    # FileWritingError: Destination does not exist
-    assert_raise Fdc::FileWritingError do
+    # FileWriteError: Destination does not exist
+    assert_raise Fdc::FileWriteError do
       @converter.export "test/data/foo"
     end
     
-    # FileWritingError: Destination is not a directory
-    assert_raise Fdc::FileWritingError do 
+    # FileWriteError: Destination is not a directory
+    assert_raise Fdc::FileWriteError do 
       @converter.export "test/data/flytec.igc"
     end
     
-    # FileWritingError: Destination is write protected
-    assert_raise Fdc::FileWritingError do 
+    # FileWriteError: Destination is write protected
+    assert_raise Fdc::FileWriteError do 
       @converter.export "test/data/orig"
     end
       

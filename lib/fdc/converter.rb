@@ -2,6 +2,7 @@ require 'date'
 require 'pathname'
 require 'builder'
 require 'fdc/utilities'
+require 'fdc/exceptions'
 
 module Fdc
 
@@ -24,7 +25,7 @@ module Fdc
     # 
     # @param [String] file The path to the IGC file
     # @param [String] encoding The encoding of the input file
-    # @raise [Fdc::FileLoadingError] If file could not be loaded
+    # @raise [Fdc::FileReadError] If file could not be loaded
     # @raise [Fdc::FileFormatError] If the file format is invalid
     def parse(file, encoding="ISO-8859-1")
     
@@ -182,7 +183,7 @@ module Fdc
     #   If nothing is supplied the files are written to the same location 
     #   as the IGC input file.
     # @raise [RuntimeError] If {#parse} and {#compile} were not called before
-    # @raise [Fdc::FileWritingError] If dirname is not a directory or write protected
+    # @raise [Fdc::FileWriteError] If dirname is not a directory or write protected
     def export(dir = nil)
     
       # Assert state
@@ -199,11 +200,11 @@ module Fdc
       begin
         file = File.new(dest.to_s << ".kml", "w:UTF-8")
       rescue Errno::EACCES => e
-        raise Fdc::FileWritingError, "Destination is write-protected: #{dir.to_s}"
+        raise Fdc::FileWriteError, "Destination is write-protected: #{dir.to_s}"
       rescue Errno::ENOTDIR => e
-        raise Fdc::FileWritingError, "Destination is not a directory: #{dir.to_s}"
+        raise Fdc::FileWriteError, "Destination is not a directory: #{dir.to_s}"
       rescue Errno::ENOENT => e
-        raise Fdc::FileWritingError, "Destination does not exist: #{dir.to_s}"
+        raise Fdc::FileWriteError, "Destination does not exist: #{dir.to_s}"
       end
     
       file.write(@kml)
@@ -216,15 +217,15 @@ module Fdc
     # Load igc file from supplied path
     def load_file
 
-      raise Fdc::FileLoadingError, "Invalid file extension: #{@path.to_s}" unless @path.extname == ".igc"
+      raise Fdc::FileReadError, "Invalid file extension: #{@path.to_s}" unless @path.extname == ".igc"
 
       # Load file
       begin
        file = File.new(@path, "r", :encoding => @encoding)
       rescue Errno::EISDIR => e
-       raise Fdc::FileLoadingError, "Input file is a directory: #{@path.to_s}"
+       raise Fdc::FileReadError, "Input file is a directory: #{@path.to_s}"
       rescue Errno::ENOENT => e
-       raise Fdc::FileLoadingError, "Input file does not exist: #{@path.to_s}"
+       raise Fdc::FileReadError, "Input file does not exist: #{@path.to_s}"
       end
 
       @igc = file.read

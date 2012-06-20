@@ -5,7 +5,7 @@ require 'optparse'
 
 ERROR_MISSING_ARGUMENT = -1
 ERROR_INVALID_OPTION = -2
-ERROR_FILE_WRITE = -3
+ERROR_FILE_EXPORT = -3
 ERROR_INCOMPATIBLE_RUBY_VERSION = -4
 
 # Lock out older and knowingly incompatible ruby versions
@@ -91,7 +91,7 @@ ARGV.each do |file|
   
   begin
       @converter.parse(file, encoding=options[:utf])
-  rescue Fdc::FileLoadingError => e
+  rescue Fdc::FileReadError => e
     STDERR.puts e.message
     next
   end
@@ -104,9 +104,9 @@ ARGV.each do |file|
     begin
       options[:dest] ? @converter.export(options[:dest]) : @converter.export
       STDERR.puts "Successfully converted IGC file: #{file}" if options[:verbose]
-    rescue Fdc::FileWritingError => e
+    rescue Fdc::FileWriteError => e
       STDERR.puts e.message
-      exit(ERROR_FILE_WRITE)
+      exit(ERROR_FILE_EXPORT)
     end
   end
 end
