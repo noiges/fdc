@@ -10,22 +10,24 @@ ERROR_INCOMPATIBLE_RUBY_VERSION = -4
 
 # Lock out older and knowingly incompatible ruby versions
 if RUBY_VERSION[0..2].to_f < 1.9 then 
-  STDERR.puts "Incompatible Ruby version: #{RUBY_VERSION} (at least 1.9.1 required)"
-  STDERR.puts "Get the latest version from ruby-lang.org!"
+  STDERR.puts <<-EOS 
+Incompatible Ruby version: #{RUBY_VERSION} (at least 1.9.1 required)
+Get the latest version from ruby-lang.org!
+EOS
   exit(ERROR_INCOMPATIBLE_RUBY_VERSION)
 end
 
 options = {}
 
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: fdc [OPTIONS] FILEPATTERN"
+  opts.banner = "Usage: fdc [options] <file>..."
   
   opts.separator ""
   opts.separator "Options:"
   
   # Define alternative destination directory
   options[:dest] = nil
-  opts.on( "-d", "--destination DEST", String, "Alternative destination directory for converted KML files" ) do |dest| 
+  opts.on( "-d", "--destination DEST", String, "Alternative destination directory" ) do |dest| 
    options[:dest] = dest
   end
   
@@ -49,19 +51,19 @@ optparse = OptionParser.new do |opts|
   
   # Extrude track to ground to emphasize absolute height
   options[:gps] = false
-  opts.on( "-g", "--gps-alt", "Use gps altitude instead of barometric altitude") do
+  opts.on( "-g", "--gps-alt", "Use gps instead of barometric altitude") do
     options[:gps] = true
   end
   
   # UTF-8 input file encoding
   options[:utf] = "ISO-8859-1"
-  opts.on( "-u", "--utf8", "Use UTF-8 as input file encoding") do
+  opts.on( "-u", "--utf8", "Set input file encoding to UTF-8") do
     options[:utf] = "UTF-8"
   end
 
   # Verbose output
   options[:verbose] = false
-  opts.on( "-v", "--verbose", "Cause verbose output, showing converted files after they were created.") do
+  opts.on( "-v", "--verbose", "Verbose output") do
     options[:verbose] = true
   end
   
