@@ -1,7 +1,7 @@
 require 'test/unit'
-require 'igc-kml'
+require 'fdc'
 
-class IGCConverterTest < Test::Unit::TestCase
+class ConverterTest < Test::Unit::TestCase
   
   def setup
     # Remove writing permission from orig/ directory
@@ -13,7 +13,7 @@ class IGCConverterTest < Test::Unit::TestCase
     # Recreate temp/ output directory
     `mkdir test/data/temp`
     
-    @converter = IGCConverter.new
+    @converter = Fdc::Converter.new
   end
   
   def teardown
@@ -35,17 +35,17 @@ class IGCConverterTest < Test::Unit::TestCase
     end
     
     # FileLoadingError: Invalid file extension (File does not end with .igc)
-    assert_raise IgcKml::FileLoadingError do
+    assert_raise Fdc::FileLoadingError do
       @converter.parse "test/data/orig/flytec.jpg"
     end
     
     # FileLoadingError: Input file is a directory
-    assert_raise IgcKml::FileLoadingError do 
+    assert_raise Fdc::FileLoadingError do 
       @converter.parse "test/data/"
     end
     
     # FileLoadingError: Input file does not exist
-    assert_raise IgcKml::FileLoadingError do
+    assert_raise Fdc::FileLoadingError do
        @converter.parse "test/data/foo.igc"
     end
     
@@ -53,17 +53,17 @@ class IGCConverterTest < Test::Unit::TestCase
     @converter.compile
     
     # FileWritingError: Destination does not exist
-    assert_raise IgcKml::FileWritingError do
+    assert_raise Fdc::FileWritingError do
       @converter.export "test/data/foo"
     end
     
     # FileWritingError: Destination is not a directory
-    assert_raise IgcKml::FileWritingError do 
+    assert_raise Fdc::FileWritingError do 
       @converter.export "test/data/flytec.igc"
     end
     
     # FileWritingError: Destination is write protected
-    assert_raise IgcKml::FileWritingError do 
+    assert_raise Fdc::FileWritingError do 
       @converter.export "test/data/orig"
     end
       
@@ -74,7 +74,7 @@ class IGCConverterTest < Test::Unit::TestCase
   def test_parse_and_compile
     
     # No A record
-    assert_raise IgcKml::FileFormatError do
+    assert_raise Fdc::FileFormatError do
       @converter.parse "test/data/mod/no_a_record.igc"
       @converter.compile
     end
@@ -86,7 +86,7 @@ class IGCConverterTest < Test::Unit::TestCase
     end
     
     # No H records and therefore no date
-    assert_raise IgcKml::FileFormatError do
+    assert_raise Fdc::FileFormatError do
       @converter.parse "test/data/mod/no_h_records.igc"
     end
     

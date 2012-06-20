@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    igc-kml (0.1.2)
+    fdc (0.0.1)
       builder (~> 3.0.0)
 
 GEM
@@ -14,5 +14,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  igc-kml!
+  fdc!
   rake (~> 0.9.2)

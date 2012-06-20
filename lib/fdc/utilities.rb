@@ -1,5 +1,5 @@
 # Utility classes used by {IGCConverter}
-module IgcKml
+module Fdc
   
    # Module with helper functions for geocoordinate conversion
    module GeoLocation

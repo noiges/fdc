@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'igc-kml'
+require 'fdc'
 require 'optparse'
 
 ERROR_MISSING_ARGUMENT = -1
@@ -18,7 +18,7 @@ end
 options = {}
 
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: igc-kml [OPTIONS] FILEPATTERN"
+  opts.banner = "Usage: fdc [OPTIONS] FILEPATTERN"
   
   opts.separator ""
   opts.separator "Options:"
@@ -85,13 +85,13 @@ end
 
 STDERR.puts optparse if ARGV.empty?
 
-@converter = IGCConverter.new
+@converter = Fdc::Converter.new
 
 ARGV.each do |file|
   
   begin
       @converter.parse(file, encoding=options[:utf])
-  rescue IgcKml::FileLoadingError => e
+  rescue Fdc::FileLoadingError => e
     STDERR.puts e.message
     next
   end
@@ -104,7 +104,7 @@ ARGV.each do |file|
     begin
       options[:dest] ? @converter.export(options[:dest]) : @converter.export
       STDERR.puts "Successfully converted IGC file: " << file if options[:verbose]
-    rescue IgcKml::FileWritingError => e
+    rescue Fdc::FileWritingError => e
       STDERR.puts e.message
       exit(ERROR_FILE_WRITE)
     end
