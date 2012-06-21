@@ -37,7 +37,7 @@ If you are a developer and want to install from source, open your console and en
 	% gem install fdc-X-X-X.gem
 
 ### Utilized IGC record types
-Right now, only the most important record types commonly utilized by paragliding FR are touched during conversion:
+The full specification of the IGC data file standard can be found in Appendix A of the [Technical Specification for IGC-approved GNSS Flight Recorders](http://www.fai.org/component/phocadownload/category/855-technical_specifications?download=3165:technical-specification-for-igc-approved-gnss-flight-recorders). A HTML reference of the 2008 spec was created by Ian Forster-Lewis and is available [here](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html). Right now, only the most important record types commonly utilized by paragliding FR are touched during conversion:
 * A record (FR manufacturer and identification)
 * H record (File header)
  * PLT - Pilot
