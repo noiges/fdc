@@ -2,7 +2,7 @@
 [![Build Status](https://secure.travis-ci.org/nokinen/fdc.png)](http://travis-ci.org/nokinen/fdc) [![Dependency Status](https://gemnasium.com/nokinen/fdc.png)](https://gemnasium.com/nokinen/fdc)
 
 ## About
-The `fdc` tool is a platform independent command-line utility written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in Applications such as [Google Earth](earth.google.com).
+The `fdc` tool is a platform independent command-line utility written in Ruby for converting files in the avionics [flight recorder data format](http://carrier.csi.cam.ac.uk/forsterlewis/soaring/igc_file_format/igc_format_2008.html) (IGC) to the [keyhole markup language](https://developers.google.com/kml/documentation/) (KML) for their display in applications such as [Google Earth](http://earth.google.com).
 
 ## Requirements
 The `fdc`tool can run on any operating system that has at least Ruby 1.9.1 installed. The latest version of the Ruby programming languate can be downloaded from [ruby-lang.org](http://www.ruby-lang.org/en/downloads/).
