@@ -1,8 +1,10 @@
 require 'date'
 require 'pathname'
 require 'builder'
+
 require 'fdc/utilities'
 require 'fdc/exceptions'
+require 'fdc/parser'
 
 # Class to convert IGC files to KML.
 # 
@@ -21,6 +23,10 @@ class Fdc::Converter
 
   # The compiled KML document
   attr_reader :kml
+  
+  def initialize
+    @parser = Fdc::Parser.new
+  end
 
   # Load and parse an IGC file from the supplied path.
   # 
@@ -31,7 +37,7 @@ class Fdc::Converter
   def parse(file, encoding="ISO-8859-1")
   
     load(file, encoding)
-    parse_file
+    @parser.parse @file
   
   end
 
@@ -44,20 +50,20 @@ class Fdc::Converter
   def compile(clamp=false, extrude=false, gps=false)
   
     # State assertion
-    raise RuntimeError, "Cannot compile before successfull parse" if @file.nil? or @date.nil?
+    raise RuntimeError, "Cannot compile before successfull parse" if @file.nil? or @parser.date_record.nil?
   
     # Build HTML for balloon description
     html = Builder::XmlMarkup.new(:indent => 2)
     html.div :style => "width: 250;" do
       html.p do
-        unless @a_records[3].nil? then 
+        unless @parser.a_record[3].nil? then 
           html.strong "Device:"
-          html.dfn @a_records[3].strip
+          html.dfn @parser.a_record[3].strip
           html.br 
         end
       end
       html.p do
-        @h_records.each do |h|
+        @parser.h_records.each do |h|
           if h.include? "PLT" and not h[2].strip.empty? then 
             html.strong "Pilot:"
             html.dfn h[2].strip
@@ -91,14 +97,14 @@ class Fdc::Converter
         end
       
         html.strong "Date:"
-        html.dfn @date[3..5].join(".")
+        html.dfn @parser.date_record[3..5].join(".")
         html.br
       end
     
       # Manufacturer-dependent L records
-      case @a_records[1]
+      case @parser.a_record[1]
       when "XSX"
-        @l_records.each do |l|
+        @parser.l_records.each do |l|
           if matches = l[1].scan(/(\w*):(-?\d+.?\d+)/) then 
             html.p do
               matches.each do |match|
@@ -156,12 +162,12 @@ class Fdc::Converter
           clamp ? xml.altitudeMode("clampToGround") : xml.altitudeMode("absolute")
           extrude ? xml.extrude("1") : xml.extrude("0")
         
-          @b_records.each do |b_record|
-             time = DateTime.new(2000 + @date[5].to_i, @date[4].to_i, @date[3].to_i, 
+          @parser.b_records.each do |b_record|
+             time = DateTime.new(2000 + @parser.date_record[5].to_i, @parser.date_record[4].to_i, @parser.date_record[3].to_i, 
               b_record[1].to_i, b_record[2].to_i, b_record[3].to_i)
              xml.when time
           end
-          @b_records.each do |b_record|
+          @parser.b_records.each do |b_record|
             coords = Fdc::GeoLocation.to_dec(b_record[5], b_record[4])
             gps ? coords << b_record[8].to_f : coords << b_record[7].to_f
             xml.gx :coord, coords.join(" ")
@@ -210,50 +216,15 @@ class Fdc::Converter
 
   private
 
-  # Regular expressions for file parsing
-  REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i
-  REGEX_H = /^[h][f|o|p]([\w]{3})(.*):(.*)$/i
-  REGEX_H_DTE = /^hf(dte)((\d{2})(\d{2})(\d{2}))/i
-  REGEX_B = /^(B)(\d{2})(\d{2})(\d{2})(\d{7}[NS])(\d{8}[EW])([AV])(\d{5})(\d{5})/
-  REGEX_L = /^l([a-z0-9]{3}|[plt]|[pfc])(.*)/i
-
-  # Parse igc file content
-  def parse_file
-  
-    begin
-  
-      # parse utc date
-      @date = @file.match(REGEX_H_DTE)
-      raise Fdc::FileFormatError, "Invalid file format - header date is missing: #{@path.to_s}" unless @date
-  
-      # parse a records
-      @a_records = @file.match(REGEX_A)
-      raise Fdc::FileFormatError, "Invalid file format: #{@path.to_s}" unless @a_records
-  
-      # parse h records
-      @h_records = @file.scan(REGEX_H)
-  
-      # parse b records
-      @b_records = @file.scan(REGEX_B)
-  
-      # parse l records
-      @l_records = @file.scan(REGEX_L)
-  
-    rescue ArgumentError => e
-      raise Fdc::FileFormatError, "Wrong file encoding: #{e.message}"
-    end
-  
-  end
-
   # Generate Snippet tag content
   def snippet
     summary = "Flight"
-    @h_records.each do |h|
+    @parser.h_records.each do |h|
       if h.include? "SIT" and not h[2].strip.empty? then 
         summary << " from #{h[2].strip}" 
       end
     end
-    summary << " on #{@date[3..5].join(".")}"
+    summary << " on #{@parser.date_record[3..5].join(".")}"
   end
 
 end
