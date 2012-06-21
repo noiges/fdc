@@ -194,7 +194,7 @@ class Fdc::Converter
     dest += @path.basename(@path.extname)
   
     begin
-      file = File.new(dest.to_s << ".kml", "w:UTF-8")
+      file = File.new("#{dest.to_s}.kml", "w:UTF-8")
     rescue Errno::EACCES => e
       raise Fdc::FileWriteError, "Destination is write-protected: #{dir.to_s}"
     rescue Errno::ENOTDIR => e
