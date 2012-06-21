@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'fdc'
-  s.version     = '0.0.3'
+  s.version     = '0.0.4'
   s.date        = '2012-06-21'
   s.summary     = "Convert flight data format files (IGC) to keyhole markup language (KML)"
   s.description = "Convert files in the avionics flight recorder data format (IGC) to the keyhole markup language (KML) for display in applications such as Google Earth."
