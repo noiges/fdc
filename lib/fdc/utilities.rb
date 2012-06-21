@@ -1,3 +1,6 @@
+require 'pathname'
+require 'fdc/exceptions'
+
 # Utility modules used by {Fdc::Converter}
 module Fdc
   
