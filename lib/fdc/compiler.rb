@@ -2,13 +2,16 @@ require 'builder'
 require 'date'
 require 'fdc/parser'
 
-# Class to compile KML documents from parsed IGC files
+# Compile KML documents from a {Fdc::Parser}
 class Fdc::Compiler
   
   # The compiled KML document
   attr_reader :kml
   attr_accessor :parser
   
+  # Create a new instance
+  # 
+  # @param [Fdc::Parser] parser A parser from which the KML document should be compiled.
   def initialize(parser)
     @parser = parser
   end

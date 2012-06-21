@@ -32,7 +32,7 @@ module Fdc
      
    end
    
-   # Module for file loading
+   # Common file loading operations
    module FileLoader
      
      # Loaded file content
@@ -74,6 +74,31 @@ module Fdc
        f.close
      end
      
+   end
+   
+   # Common file writing operations
+   module FileWriter
+     
+     private
+     # Write a file to the file system
+     # 
+     # @param [String] path The path for the file
+     # @param [String] data The data of the file
+     # @raise [Fdc::FileWriteError] If dirname is not a directory or write protected
+     def write(path, data)
+       begin
+         file = File.new(path, "w:UTF-8")
+       rescue Errno::EACCES => e
+         raise Fdc::FileWriteError, "Destination is write-protected: #{path.to_s}"
+       rescue Errno::ENOTDIR => e
+         raise Fdc::FileWriteError, "Destination is not a directory: #{path.to_s}"
+       rescue Errno::ENOENT => e
+         raise Fdc::FileWriteError, "Destination does not exist: #{path.to_s}"
+       end
+
+       file.write(data)
+       file.close
+     end
    end
   
 end

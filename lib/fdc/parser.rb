@@ -1,4 +1,4 @@
-# Class for parsing IGC record types
+# Parse record types from IGC file data
 class Fdc::Parser
   
   attr_reader :date_record

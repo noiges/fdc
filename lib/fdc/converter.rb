@@ -5,7 +5,7 @@ require 'fdc/exceptions'
 require 'fdc/parser'
 require 'fdc/compiler'
 
-# Class to convert IGC files to KML.
+# Convert IGC Files to KML
 # 
 # @!attribute [r] kml
 #   @return [String] The KML document
@@ -17,8 +17,9 @@ require 'fdc/compiler'
 #   converter.export(output/dir)
 class Fdc::Converter
 
-  # FileLoader mixing
+  # Mixins
   include Fdc::FileLoader
+  include Fdc::FileWriter
   
   def initialize
     @parser = Fdc::Parser.new
@@ -67,25 +68,9 @@ class Fdc::Converter
     raise RuntimeError, "Cannot export before compile was called" unless @compiler.kml
   
     dir = @path.dirname.to_s unless dir
-  
-    # Create Pathname for easier handling
-    dest = Pathname.new(dir)
-  
-    # Create output file name
-    dest += @path.basename(@path.extname)
-  
-    begin
-      file = File.new("#{dest.to_s}.kml", "w:UTF-8")
-    rescue Errno::EACCES => e
-      raise Fdc::FileWriteError, "Destination is write-protected: #{dir.to_s}"
-    rescue Errno::ENOTDIR => e
-      raise Fdc::FileWriteError, "Destination is not a directory: #{dir.to_s}"
-    rescue Errno::ENOENT => e
-      raise Fdc::FileWriteError, "Destination does not exist: #{dir.to_s}"
-    end
-  
-    file.write(@compiler.kml)
-    file.close
+    dest = Pathname.new(dir) + @path.basename(@path.extname)
+    
+    write "#{dest.to_s}.kml", @compiler.kml
   
   end
   
