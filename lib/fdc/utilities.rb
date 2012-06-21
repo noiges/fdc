@@ -1,7 +1,7 @@
-# Utility classes used by {IGCConverter}
+# Utility modules used by {IGCConverter}
 module Fdc
   
-   # Module with helper functions for geocoordinate conversion
+   # Helper functions for geocoordinate conversion
    module GeoLocation
 
      # Convert geocoordinates from mindec notation of IGC to dec notation
@@ -26,6 +26,11 @@ module Fdc
 
        return long_dec, lat_dec
      end
+     
+   end
+   
+   # Helper functions for file loading
+   module FileLoader
      
    end
   
