@@ -33,8 +33,10 @@ class Fdc::Converter
   # @raise [Fdc::FileReadError] If file could not be loaded
   # @raise [Fdc::FileFormatError] If the file format is invalid
   def parse(file, encoding="ISO-8859-1")
-  
-    load(file, encoding)
+    
+    path = Pathname.new(file)
+    load(path, encoding)
+    raise Fdc::FileReadError, "Invalid file extension: #{path.to_s}" unless path.extname == ".igc"
     @parser.parse @file
   
   end
@@ -68,9 +70,7 @@ class Fdc::Converter
     raise RuntimeError, "Cannot export before compile was called" unless @compiler.kml
   
     dir = @path.dirname.to_s unless dir
-    dest = Pathname.new(dir) + @path.basename(@path.extname)
-    
-    write "#{dest.to_s}.kml", @compiler.kml
+    write Pathname.new(dir) + (@path.basename(@path.extname).to_s << ".kml"), @compiler.kml
   
   end
   
