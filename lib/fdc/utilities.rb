@@ -29,27 +29,46 @@ module Fdc
      
    end
    
-   # Helper functions for file loading
+   # Module for file loading
    module FileLoader
      
-     def load_file(file, encoding)
+     # Loaded file content
+     attr_reader :file
+     
+     # Loaded file path
+     attr_reader :path
+     
+     # Loaded file encoding
+     attr_reader :encoding
+     
+     private
+     
+     # Load a file from the supplied path
+     # 
+     # @param [String] file The path to the file
+     # @param [String] encoding The encoding of the file
+     # @raise [Fdc::FileReadError] If file could not be loaded
+     def load(file, encoding)
        
+       # The path of the file
        @path = Pathname.new(file)
+       
+       # The file encoding
        @encoding = encoding
        
        raise Fdc::FileReadError, "Invalid file extension: #{@path.to_s}" unless @path.extname == ".igc"
 
        # Load file
        begin
-        file = File.new(@path, "r", :encoding => @encoding)
+        f = File.new(@path, "r", :encoding => @encoding)
        rescue Errno::EISDIR => e
         raise Fdc::FileReadError, "Input file is a directory: #{@path.to_s}"
        rescue Errno::ENOENT => e
         raise Fdc::FileReadError, "Input file does not exist: #{@path.to_s}"
        end
-
-       @igc = file.read
-       file.close
+       # The loaded file
+       @file = f.read
+       f.close
      end
      
    end

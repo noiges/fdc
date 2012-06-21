@@ -30,8 +30,7 @@ class Fdc::Converter
   # @raise [Fdc::FileFormatError] If the file format is invalid
   def parse(file, encoding="ISO-8859-1")
   
-    # Do work
-    load_file(file, encoding)
+    load(file, encoding)
     parse_file
   
   end
@@ -45,7 +44,7 @@ class Fdc::Converter
   def compile(clamp=false, extrude=false, gps=false)
   
     # State assertion
-    raise RuntimeError, "Cannot compile before successfull parse" if @igc.nil? or @date.nil?
+    raise RuntimeError, "Cannot compile before successfull parse" if @file.nil? or @date.nil?
   
     # Build HTML for balloon description
     html = Builder::XmlMarkup.new(:indent => 2)
@@ -224,21 +223,21 @@ class Fdc::Converter
     begin
   
       # parse utc date
-      @date = @igc.match(REGEX_H_DTE)
+      @date = @file.match(REGEX_H_DTE)
       raise Fdc::FileFormatError, "Invalid file format - header date is missing: #{@path.to_s}" unless @date
   
       # parse a records
-      @a_records = @igc.match(REGEX_A)
+      @a_records = @file.match(REGEX_A)
       raise Fdc::FileFormatError, "Invalid file format: #{@path.to_s}" unless @a_records
   
       # parse h records
-      @h_records = @igc.scan(REGEX_H)
+      @h_records = @file.scan(REGEX_H)
   
       # parse b records
-      @b_records = @igc.scan(REGEX_B)
+      @b_records = @file.scan(REGEX_B)
   
       # parse l records
-      @l_records = @igc.scan(REGEX_L)
+      @l_records = @file.scan(REGEX_L)
   
     rescue ArgumentError => e
       raise Fdc::FileFormatError, "Wrong file encoding: #{e.message}"
