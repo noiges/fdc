@@ -16,6 +16,9 @@ require 'fdc/exceptions'
 #   converter.export(output/dir)
 class Fdc::Converter
 
+  # FileLoader mixing
+  include Fdc::FileLoader
+
   # The compiled KML document
   attr_reader :kml
 
@@ -27,12 +30,8 @@ class Fdc::Converter
   # @raise [Fdc::FileFormatError] If the file format is invalid
   def parse(file, encoding="ISO-8859-1")
   
-    # Update state
-    @path = Pathname.new(file)
-    @encoding = encoding
-  
     # Do work
-    load_file
+    load_file(file, encoding)
     parse_file
   
   end
@@ -211,25 +210,6 @@ class Fdc::Converter
   end
 
   private
-
-  # Load igc file from supplied path
-  def load_file
-
-    raise Fdc::FileReadError, "Invalid file extension: #{@path.to_s}" unless @path.extname == ".igc"
-
-    # Load file
-    begin
-     file = File.new(@path, "r", :encoding => @encoding)
-    rescue Errno::EISDIR => e
-     raise Fdc::FileReadError, "Input file is a directory: #{@path.to_s}"
-    rescue Errno::ENOENT => e
-     raise Fdc::FileReadError, "Input file does not exist: #{@path.to_s}"
-    end
-
-    @igc = file.read
-    file.close
-
-  end
 
   # Regular expressions for file parsing
   REGEX_A = /^[a]([a-z\d]{3})([a-z\d]{3})?(.*)$/i

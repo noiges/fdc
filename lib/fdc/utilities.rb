@@ -1,4 +1,4 @@
-# Utility modules used by {IGCConverter}
+# Utility modules used by {Fdc::Converter}
 module Fdc
   
    # Helper functions for geocoordinate conversion
@@ -31,6 +31,26 @@ module Fdc
    
    # Helper functions for file loading
    module FileLoader
+     
+     def load_file(file, encoding)
+       
+       @path = Pathname.new(file)
+       @encoding = encoding
+       
+       raise Fdc::FileReadError, "Invalid file extension: #{@path.to_s}" unless @path.extname == ".igc"
+
+       # Load file
+       begin
+        file = File.new(@path, "r", :encoding => @encoding)
+       rescue Errno::EISDIR => e
+        raise Fdc::FileReadError, "Input file is a directory: #{@path.to_s}"
+       rescue Errno::ENOENT => e
+        raise Fdc::FileReadError, "Input file does not exist: #{@path.to_s}"
+       end
+
+       @igc = file.read
+       file.close
+     end
      
    end
   
