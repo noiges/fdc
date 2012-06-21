@@ -47,35 +47,15 @@ By doing so, you are cloning this repository to the current working directory of
 
 ## Usage
 	
-Convert one or more .igc files to .kml:
-
-	% fdc <filepattern>
-
-See help:
-
-	% fdc -h
+* Convert files: `fdc <filepattern>`
+* Convert to alternative output dir: `fdc -d dest/dir <filepattern>`
+* Extrude track to ground: `fdc -e <filepattern>`
+* Use gps altitude: `fdc -g <filepattern>`
+* Display usage for more: `fdc` or `fdc -h`
 	
-## Advanced usage
-### Skytraxx synchronization
-On Unix-like systems, `fdc` and `rsync` can be used to setup aliases to conveniently synchronize your [Skytraxx 2.0](http://flugvario.de) device with your computer. 
-
-The following instructions assume that the volume of your Skytraxx device is called `SKYTRAXX`, and that you sync `SKYTRAXX/FLIGHTS/` to `~/Flights`on your computer.
-
-#### Bash
-If you are using bash (the default shell on most Linux systems as well as Mac OS X), add the following line to your `.bashrc` file:
-
-	alias skytraxx="rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; find ~/Flights -type f -name \*.igc | xargs fdc"
-	
-If you don't know where this file is, or how to edit it, simply execute the following command:
+## Skytraxx 2.0 synchronization
+On Unix-like systems, `fdc` and `rsync` can be used to setup aliases to conveniently synchronize a [Skytraxx 2.0](http://flugvario.de) device and a computer. Assuming that the mounted volume of the connected device is `/Volumes/SKYTRAXX`, and the destination folder on the computer is `~/Flights`, the following script must be executed from the console:
 
 	% echo "alias skytraxx=\"rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; find ~/Flights -type f -name \*.igc | xargs fdc\"" >> ~/.bashrc
 
-#### Zsh
-If your are using a shell that supports recursive globbing (e.g. zsh or fish) the alias can be further simplified to:
-	
-	alias skytraxx="rsync -rv /Volumes/SKYTRAXX/FLIGHTS/ ~/Flights; fdc ~/Flights/**/*.igc"
-
-#### Using the alias
-After you succesfully added the `skytraxx` alias to your shell, you are able to synchronize all new IGC files from a connected skytraxx device to `~/Flights` and automatically convert them to the KML format. To do so, simply execute the following from your console:
-
-	% skytraxx
+After adding this alias to the shell, new files on the device can be synchronized with the computer and automatically converted by simply invoking `skytraxx` from the console.
