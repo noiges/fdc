@@ -55,3 +55,7 @@ The full specification of the IGC data file standard can be found in Appendix A 
 
 ### File structure of created KML document
 The utility creates a `<gx:Track>` element from the B records, and uses A, H and L records to create metadata for the corresponding `<description>` element. By default, the barometrix altitude information from the B records is used, and the track is not clamped to the ground, nor extruded. However, this bevavior can be changed through the available command line options.
+
+### LICENSE
+
+This software is released under the MIT License, see LICENSE for further details.
