@@ -1,4 +1,5 @@
 require 'rake/testtask'
+require 'gem-licenses'
 
 Rake::TestTask.new do |t|
   t.libs << 'test'
@@ -20,4 +21,14 @@ end
 desc "Build gem with current .gemspec"
 task :build do
   sh "gem build fdc.gemspec"
+end
+
+desc "Get licenses of gems"
+task :licenses do
+  Gem.licenses.each do |license, gems| 
+    puts "#{license}"
+    gems.sort_by { |gem| gem.name }.each do |gem|
+      puts "* #{gem.name} #{gem.version} (#{gem.homepage}) - #{gem.summary}"
+    end
+  end
 end
