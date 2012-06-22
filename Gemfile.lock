@@ -8,6 +8,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     builder (3.0.0)
+    gem-licenses (0.1.2)
     rake (0.9.2.2)
 
 PLATFORMS
@@ -15,4 +16,5 @@ PLATFORMS
 
 DEPENDENCIES
   fdc!
+  gem-licenses (~> 0.1.2)
   rake (~> 0.9.2)

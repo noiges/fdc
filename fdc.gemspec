@@ -10,5 +10,6 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/nokinen/fdc'
   s.add_runtime_dependency "builder", '~> 3.0.0'
   s.add_development_dependency "rake", '~> 0.9.2'
+  s.add_development_dependency "gem-licenses", '~> 0.1.2'
   s.executables << 'fdc'
 end
