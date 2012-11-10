@@ -93,7 +93,7 @@ ARGV.each do |file|
   
   begin
       @converter.parse(file, encoding=options[:utf])
-  rescue Fdc::FileReadError => e
+  rescue Fdc::FileReadError, Fdc::FileFormatError => e
     STDERR.puts e.message
     next
   end
