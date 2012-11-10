@@ -36,7 +36,6 @@ class Fdc::Converter
     
     path = Pathname.new(file)
     load(path, encoding)
-    raise Fdc::FileReadError, "Invalid file extension: #{path.to_s}" unless path.extname == ".igc"
     @parser.parse @file
   
   end

@@ -34,11 +34,6 @@ class ConverterTest < Test::Unit::TestCase
       @converter.export
     end
     
-    # FileReadError: Invalid file extension (File does not end with .igc)
-    assert_raise Fdc::FileReadError do
-      @converter.parse "test/data/orig/flytec.jpg"
-    end
-    
     # FileReadError: Input file is a directory
     assert_raise Fdc::FileReadError do 
       @converter.parse "test/data/"
